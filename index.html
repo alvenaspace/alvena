@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#e9f2e4"><title>venacantiq — little things, lovely prices</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">document.addEventListener('DOMContentLoaded',function(){
+ closeModal('variantPickerModal');closeModal('loginModal');closeModal('adminModal');
+});
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Caveat:wght@600;700&family=DM+Mono:wght@400;500&family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -584,7 +587,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
 .order-total small{display:block;color:#8e7b8a;font-size:12px;font-weight:900;letter-spacing:.7px}.order-total strong{display:block;margin-top:5px;color:#302538;font-size:27px;font-weight:1000}
 .order-checkout{min-width:245px;padding:17px 22px;border-radius:22px}
 .order-customer{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.order-customer .field{margin:0}
-#cartDockButton{display:none!important}
+#cartDockButton{display:flex!important}
 @media(max-width:650px){.order-section{padding:18px 15px;border-radius:22px}.order-heading h2{font-size:16px}.order-bottom{align-items:stretch;flex-direction:column}.order-checkout{width:100%;min-width:0}.order-customer{grid-template-columns:1fr}.order-total strong{font-size:25px}.order-line{align-items:flex-start;flex-wrap:wrap}.order-qty{margin-left:auto}}
 
 #variantPickerModal{z-index:100010!important;pointer-events:auto!important}
@@ -816,6 +819,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
   <div class="field"><label>PESAN KECIL (OPSIONAL)</label><textarea id="buyerNote" placeholder="Ada request khusus? Tulis di sini ya ♡"></textarea></div>
  </div>
 </section>
+<button id="cartDockButton" class="cart-dock" type="button" onclick="openCart()" hidden aria-label="Buka keranjang belanja"><span><small>KERANJANG KAMU ♡</small><strong id="cartDockCount">0 item</strong></span><span class="cart-dock-arrow"><strong id="cartDockTotal">Rp0</strong><small>Lihat keranjang →</small></span></button>
 <footer class="footer">made with love ♡ venacantiq</footer></div>
 <div class="overlay" id="loginModal"><div class="modal" style="max-width:390px"><div class="modalhead"><h2>Admin login ♡</h2><button class="close" onclick="closeModal('loginModal')">×</button></div><div class="note">Login admin Vena Cantique menggunakan email yang sudah didaftarkan di Supabase ♡</div><div class="field"><label>EMAIL ADMIN</label><input id="loginUser" type="email" autocomplete="username" placeholder="Email admin"></div><div class="field"><label>PASSWORD</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="Password"></div><button class="primary" style="width:100%" onclick="login()">Masuk dashboard</button><button class="text-button" type="button" onclick="sendPasswordReset()">Lupa password? Kirim link reset ke email ♡</button><p class="admin-help" id="resetStatus" aria-live="polite"></p></div></div>
 <div class="overlay" id="resetPasswordModal"><div class="modal" style="max-width:390px"><div class="modalhead"><h2>Buat password baru ♡</h2></div><p class="note">Masukkan password baru untuk akun adminmu.</p><div class="field"><label>PASSWORD BARU</label><input id="newAdminPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Minimal 8 karakter"></div><button class="primary" style="width:100%" onclick="saveNewPassword()">Simpan password baru</button></div></div>
@@ -839,7 +843,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
    <section class="admin-section" id="overview">
     <div class="admin-welcome"><h3>Welcome back, Vena! ♡</h3><p>Kelola toko kecilmu dari satu tempat yang lebih rapi.</p></div>
     <div class="admin-overview-cards">
-     <div class="admin-overview-card"><span>♡ Produk aktif</span><strong id="statProducts">0</strong></div>
+     <div class="admin-overview-card"><span>♡ Total aplikasi</span><strong id="statProducts">0</strong></div>
      <div class="admin-overview-card"><span>▦ Total stok</span><strong id="statStock">0</strong></div>
      <div class="admin-overview-card"><span>⚡ Promo aktif</span><strong id="statPromo">Tidak</strong></div>
     </div>
@@ -1000,7 +1004,7 @@ function getPrice(p){if(saleIsLive()&&p.sale&&p.sale<p.price&&p.saleEnabled!==fa
 function hasSale(p){return getPrice(p)<Number(p.price)}
 function updateFlashSaleBanner(){
  const banner=document.getElementById('flashSaleNotice');if(!banner)return;
- const eligible=products.reduce((n,p)=>n+(p.active?appVariants(p).filter(v=>v.active!==false&&v.sale!=null&&v.sale<v.price).length:(hasSale(p)?1:0)),0)+products.filter(p=>p.active&&!appVariants(p).length&&hasSale(p)).length;
+ const eligible=products.reduce((n,p)=>n+appVariants(p).filter(v=>v.active!==false&&v.sale!=null&&v.sale<v.price).length,0)+products.filter(p=>!appVariants(p).length&&hasSale(p)).length;
  const live=saleIsLive()&&eligible>0;
  banner.classList.toggle('is-live',live);
  if(!live)return;
@@ -1146,7 +1150,7 @@ function stockClear(id){const p=products.find(x=>x.id===id);if(!p)return;if(!con
 function mapDbProduct(r){return {id:r.id,name:r.name,description:r.description||'',category:normalizeCategory(r.category||'Hiburan'),price:Number(r.price)||0,sale:null,saleEnabled:false,stock:Number(r.stock)||0,image:r.image_url||'',active:r.is_active!==false,variants:[]}}
 function dbProduct(p){
  // Match the real public.products schema exactly. Package promotions live in product_variants.
- return {id:p.id,name:p.name,description:p.description||'',category:normalizeCategory(p.category),price:Number(p.price)||0,image_url:p.image||'',stock:Number(p.stock)||0,is_active:p.active!==false};
+ return {id:p.id,name:p.name,description:p.description||'',category:normalizeCategory(p.category),price:Number(p.price)||0,image_url:p.image||'',stock:Number(p.stock)||0,is_active:true};
 }
 function load(){try{products=JSON.parse(localStorage.getItem(KEY))||starter}catch{products=starter}products=products.map(p=>({...p,category:normalizeCategory(p.category),variants:(Array.isArray(p.variants)?p.variants:(Number(p.price)>0?[{id:crypto.randomUUID(),name:'Paket utama',price:Number(p.price),stock:Number(p.stock)||0,sale:p.sale==null?null:Number(p.sale)}]:[])).map(v=>({...v,active:true}))}));if(!localStorage.getItem(KEY))localStorage.setItem(KEY,JSON.stringify(products))}
 async function persist(){
@@ -1210,7 +1214,7 @@ function rupiah(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}function sav
  const qty=cart.reduce((a,b)=>a+b.qty,0),count=document.getElementById('cartCount');
  if(count)count.textContent=qty;const headingCount=document.getElementById('cartCount');if(headingCount)headingCount.textContent=qty;
  const dock=document.getElementById('cartDockButton'),dockCount=document.getElementById('cartDockCount'),dockTotal=document.getElementById('cartDockTotal');
- if(dock){dock.hidden=qty===0;if(dockCount)dockCount.textContent=`${qty} item`;if(dockTotal)dockTotal.textContent=rupiah(cart.reduce((sum,it)=>{const p=products.find(x=>x.id===it.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;const price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):p?getPrice(p):0;return sum+price*it.qty},0));}
+ if(dock){dock.hidden=false;if(dockCount)dockCount.textContent=`${qty} item`;if(dockTotal)dockTotal.textContent=rupiah(cart.reduce((sum,it)=>{const p=products.find(x=>x.id===it.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;const price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):p?getPrice(p):0;return sum+price*it.qty},0));}
 }
 function renderCats(){
  const cats=['Semua',...APP_CATEGORIES];
@@ -1226,10 +1230,10 @@ function renderProductCard(p){
  const priceBlock=!hasVariants?`<div class="prices"><span class="price">${rupiah(getPrice(p))}</span>${hasSale(p)?`<span class="old">${rupiah(p.price)}</span>`:''}</div>`:'';
  const action=hasVariants
   ?`<button class="add variant-open-button" type="button" data-open-variants="${esc(String(p.id))}" onclick="openVariantPicker(this.getAttribute('data-open-variants'))">${available?'Pilih Varian ›':'Stok Habis'}</button>`
-  :`<button class="add" type="button" data-add-product="${esc(String(p.id))}" onclick="addCart(this.getAttribute('data-add-product'))" ${Number(p.stock)<=0?'disabled':''}>${Number(p.stock)<=0?'Stok habis':'+ Keranjang'}</button>`;
+  :`<button class="add" type="button" data-add-product="${esc(String(p.id))}" ${Number(p.stock)<=0?'disabled':''}>${Number(p.stock)<=0?'Stok habis':'+ Keranjang'}</button>`;
  return `<article class="product product-horizontal"><div class="product-main"><div class="photo">${image}${hasSale(p)?`<span class="sale">FLASH SALE${globalSale.enabled?' · '+globalSale.percent+'%':''}</span>`:''}</div><div class="pbody"><span class="tag">${esc(normalizeCategory(p.category))}</span><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||'')}</div>${priceBlock}</div></div>${action}</article>`;
 }
-function renderProducts(){updateFlashSaleBanner();renderCats();let q=document.getElementById('search').value.toLowerCase();let list=products.filter(p=>p.active&&(activeCategory==='Semua'||normalizeCategory(p.category)===activeCategory)&&(p.name+' '+p.description+' '+p.category).toLowerCase().includes(q));const root=document.getElementById('products');if(!list.length){root.innerHTML='<div class="empty">'+esc(siteSettings.productsEmpty||'Belum ada produk yang cocok ♡')+'</div>';return;}const cats=activeCategory==='Semua'?APP_CATEGORIES.filter(c=>list.some(p=>normalizeCategory(p.category)===c)):[activeCategory];root.classList.add('grouped-products');root.innerHTML=cats.map(c=>{const items=list.filter(p=>normalizeCategory(p.category)===c);if(!items.length)return '';return `<section class="category-section"><div class="category-heading"><span class="category-heading-icon">${({Hiburan:'🎬',Desain:'🎨',Musik:'🎵',AI:'🤖',Produktivitas:'💼','Sosial Media':'♡',Gaming:'🎮'})[c]||'✦'}</span><div><h2>${esc(c)}</h2><small>${items.length} aplikasi tersedia ♡</small></div></div><div class="category-product-grid">${items.map(renderProductCard).join('')}</div></section>`;}).join('');}
+function renderProducts(){updateFlashSaleBanner();renderCats();let q=document.getElementById('search').value.toLowerCase();let list=products.filter(p=>(activeCategory==='Semua'||normalizeCategory(p.category)===activeCategory)&&(p.name+' '+p.description+' '+p.category).toLowerCase().includes(q));const root=document.getElementById('products');if(!list.length){root.innerHTML='<div class="empty">'+esc(siteSettings.productsEmpty||'Belum ada produk yang cocok ♡')+'</div>';return;}const cats=activeCategory==='Semua'?APP_CATEGORIES.filter(c=>list.some(p=>normalizeCategory(p.category)===c)):[activeCategory];root.classList.add('grouped-products');root.innerHTML=cats.map(c=>{const items=list.filter(p=>normalizeCategory(p.category)===c);if(!items.length)return '';return `<section class="category-section"><div class="category-heading"><span class="category-heading-icon">${({Hiburan:'🎬',Desain:'🎨',Musik:'🎵',AI:'🤖',Produktivitas:'💼','Sosial Media':'♡',Gaming:'🎮'})[c]||'✦'}</span><div><h2>${esc(c)}</h2><small>${items.length} aplikasi tersedia ♡</small></div></div><div class="category-product-grid">${items.map(renderProductCard).join('')}</div></section>`;}).join('');}
 let variantPickerProductId=null;
 function openVariantPicker(id){
  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
@@ -1416,7 +1420,7 @@ function renderAdmin(){
  const q=(document.getElementById('adminProductSearch')?.value||'').toLowerCase();
  const filtered=products.filter(p=>(p.name+' '+p.category).toLowerCase().includes(q));
  const grouped=filtered.reduce((acc,p)=>{const cat=(p.category||'Lainnya').trim()||'Lainnya';(acc[cat]||(acc[cat]=[])).push(p);return acc;},{});
- document.getElementById('adminList').innerHTML=Object.entries(grouped).map(([category,items],groupIndex)=>`<details class="product-group" ${groupIndex===0?'open':''}><summary><span class="product-group-name">${esc(category)}</span><span class="product-group-meta">${items.length} aplikasi <b>＋</b></span></summary><div class="product-group-body">${items.map(p=>`<div class="adminitem"><div class="adminitem-top"><span><b>${esc(p.name)}</b><small>${appVariants(p).length} paket · ${appVariants(p).reduce((n,v)=>n+(Number(v.stock)||0),0)} total stok · ${p.active?'Aktif':'Nonaktif'}</small></span><div class="actions"><button class="secondary" onclick="selectApp('${p.id}');document.getElementById('appSelect').value='${p.id}'">Edit</button><button class="danger" onclick="deleteProduct('${p.id}')">Hapus aplikasi</button></div></div>${appVariants(p).map(v=>`<div class="adminitem" style="margin:7px 0 0 10px;padding:8px;background:#fff7fb"><div class="adminitem-top"><span><b>♡ ${esc(v.name)}</b><small>${rupiah(v.price)} · stok ${Number(v.stock)||0}</small></span><button class="secondary" onclick="selectApp('${p.id}');document.getElementById('appSelect').value='${p.id}';document.getElementById('variantSelect').value='${v.id}';selectVariant('${v.id}');showAdminSection('productsPanel',document.querySelector('.admin-nav button:nth-child(2)'))">Edit paket</button></div></div>`).join('')}</div>`).join('')}</div></details>`).join('')||'<div class="product-list-empty">Belum ada aplikasi yang cocok ♡</div>';
+ document.getElementById('adminList').innerHTML=Object.entries(grouped).map(([category,items],groupIndex)=>`<details class="product-group" ${groupIndex===0?'open':''}><summary><span class="product-group-name">${esc(category)}</span><span class="product-group-meta">${items.length} aplikasi <b>＋</b></span></summary><div class="product-group-body">${items.map(p=>`<div class="adminitem"><div class="adminitem-top"><span><b>${esc(p.name)}</b><small>${appVariants(p).length} paket · ${appVariants(p).reduce((n,v)=>n+(Number(v.stock)||0),0)} total stok · </small></span><div class="actions"><button class="secondary" onclick="selectApp('${p.id}');document.getElementById('appSelect').value='${p.id}'">Edit</button><button class="danger" onclick="deleteProduct('${p.id}')">Hapus aplikasi</button></div></div>${appVariants(p).map(v=>`<div class="adminitem" style="margin:7px 0 0 10px;padding:8px;background:#fff7fb"><div class="adminitem-top"><span><b>♡ ${esc(v.name)}</b><small>${rupiah(v.price)} · stok ${Number(v.stock)||0}</small></span><button class="secondary" onclick="selectApp('${p.id}');document.getElementById('appSelect').value='${p.id}';document.getElementById('variantSelect').value='${v.id}';selectVariant('${v.id}');showAdminSection('productsPanel',document.querySelector('.admin-nav button:nth-child(2)'))">Edit paket</button></div></div>`).join('')}</div>`).join('')}</div></details>`).join('')||'<div class="product-list-empty">Belum ada aplikasi yang cocok ♡</div>';
  refreshAppSelect();
  const wa=document.getElementById('waCurrent');if(wa)wa.textContent=waNumber?'Nomor aktif: '+waNumber:'Nomor WhatsApp belum diatur.';
  refreshAdminStats();renderFlashManager();
@@ -1428,7 +1432,7 @@ function showAdminSection(id,button){
  if(id==='flashPanel')renderFlashManager();
 }
 function refreshAdminStats(){
- const active=products.filter(p=>p.active).length,stock=products.reduce((n,p)=>n+appVariants(p).reduce((m,v)=>m+Math.max(0,Number(v.stock)||0),0)+(appVariants(p).length?0:Math.max(0,Number(p.stock)||0)),0);
+ const active=products.length,stock=products.reduce((n,p)=>n+appVariants(p).reduce((m,v)=>m+Math.max(0,Number(v.stock)||0),0)+(appVariants(p).length?0:Math.max(0,Number(p.stock)||0)),0);
  const a=document.getElementById('statProducts'),b=document.getElementById('statStock'),c=document.getElementById('statPromo');
  if(a)a.textContent=active;if(b)b.textContent=stock;if(c)c.textContent=saleIsLive()?'Aktif':'Tidak';
 }
@@ -1442,7 +1446,7 @@ function saveIndividualSales(){saveGlobalSale()}
 function toggleCustomCategory(){const select=document.getElementById('pCategory'),custom=document.getElementById('pCategoryCustom');if(!select||!custom)return;custom.style.display=select.value==='Lainnya'?'block':'none';if(select.value!=='Lainnya')custom.value=''}
 function resetForm(){['editId','pName','pDesc','pPrice','pSale','pImageUrl','pCategoryCustom'].forEach(id=>document.getElementById(id).value='');document.getElementById('pCategory').value='Streaming';toggleCustomCategory();document.getElementById('pStock').value=10;document.getElementById('pActive').checked=true;document.getElementById('pImage').value=''}
 function editProduct(id){let p=products.find(x=>x.id===id);if(!p)return;document.getElementById('editId').value=p.id;document.getElementById('pName').value=p.name;const categorySelect=document.getElementById('pCategory'),known=[...categorySelect.options].some(o=>o.value===p.category&&o.value!=='Lainnya');categorySelect.value=known?p.category:'Lainnya';document.getElementById('pCategoryCustom').value=known?'':(p.category||'');toggleCustomCategory();document.getElementById('pDesc').value=p.description;document.getElementById('pPrice').value=p.price;document.getElementById('pSale').value=p.sale||'';document.getElementById('pStock').value=p.stock;document.getElementById('pImageUrl').value=p.image||'';document.getElementById('pActive').checked=p.active;document.getElementById('pImage').value='';document.querySelector('#adminModal .modal').scrollTo({top:0,behavior:'smooth'})}
-function saveProduct(){let name=document.getElementById('pName').value.trim(),price=Number(document.getElementById('pPrice').value);if(!name||!price)return alert('Nama dan harga wajib diisi.');let id=document.getElementById('editId').value||'p'+Date.now();let old=products.find(p=>p.id===id);let file=document.getElementById('pImage').files[0];let image=document.getElementById('pImageUrl').value.trim()||old?.image||'';let data={id,name,category:(document.getElementById('pCategory').value==='Lainnya'?document.getElementById('pCategoryCustom').value.trim():document.getElementById('pCategory').value.trim())||'Lainnya',description:document.getElementById('pDesc').value.trim(),price,sale:Number(document.getElementById('pSale').value)||null,stock:Math.max(0,Number(document.getElementById('pStock').value)||0),image,active:document.getElementById('pActive').checked};if(file){let reader=new FileReader();reader.onload=()=>{data.image=reader.result;finishSave(data)};reader.readAsDataURL(file)}else finishSave(data)}async function finishSave(data){let i=products.findIndex(p=>p.id===data.id);if(i>=0)products[i]=data;else products.unshift(data);await persist();resetForm();renderAdmin();renderProducts();alert('Produk disimpan dan disinkronkan ke Supabase ♡')}
+function saveProduct(){let name=document.getElementById('pName').value.trim(),price=Number(document.getElementById('pPrice').value);if(!name||!price)return alert('Nama dan harga wajib diisi.');let id=document.getElementById('editId').value||'p'+Date.now();let old=products.find(p=>p.id===id);let file=document.getElementById('pImage').files[0];let image=document.getElementById('pImageUrl').value.trim()||old?.image||'';let data={id,name,category:(document.getElementById('pCategory').value==='Lainnya'?document.getElementById('pCategoryCustom').value.trim():document.getElementById('pCategory').value.trim())||'Lainnya',description:document.getElementById('pDesc').value.trim(),price,sale:Number(document.getElementById('pSale').value)||null,stock:Math.max(0,Number(document.getElementById('pStock').value)||0),image,active:true};if(file){let reader=new FileReader();reader.onload=()=>{data.image=reader.result;finishSave(data)};reader.readAsDataURL(file)}else finishSave(data)}async function finishSave(data){let i=products.findIndex(p=>p.id===data.id);if(i>=0)products[i]=data;else products.unshift(data);await persist();resetForm();renderAdmin();renderProducts();alert('Produk disimpan dan disinkronkan ke Supabase ♡')}
 async function deleteProduct(id){if(!confirm('Hapus produk ini?'))return;products=products.filter(p=>p.id!==id);cart=cart.filter(x=>x.id!==id);const {error:ve}=await sb.from('product_variants').delete().eq('product_id',id);if(ve)return alert('Gagal menghapus paket dari cloud: '+ve.message);const {error}=await sb.from('products').delete().eq('id',id);if(error)return alert('Gagal menghapus dari cloud: '+error.message);persist();saveCart();renderAdmin();renderProducts()}function setWhatsApp(){let v=prompt('Masukkan nomor WhatsApp toko dengan kode negara, tanpa + atau spasi. Contoh 6281234567890:',siteSettings.whatsappNumber||waNumber);if(v!==null){waNumber=v.replace(/\D/g,'');siteSettings.whatsappNumber=waNumber;localStorage.setItem('venacantiq_wa',waNumber);saveSettings().then(()=>alert('Nomor WhatsApp disimpan ♡')).catch(e=>alert('Gagal menyimpan nomor WhatsApp ke cloud: '+e.message))}}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 // Original soft pastel music-box / lullaby arrangement made with Web Audio.
 // No external track or copyrighted recording is used.
@@ -1709,7 +1713,7 @@ load();loadSettings();renderProducts();setInterval(()=>{const wasLive=saleIsLive
 </style>
 
 
-<!-- Shop buttons call their handlers directly. -->
+
 
 
 <style id="reference-style-product-cards">
@@ -1834,4 +1838,16 @@ load();loadSettings();renderProducts();setInterval(()=>{const wasLive=saleIsLive
  #products .product .package-picks{margin:14px 0 0!important;width:100%;}
  #products .product .package-pick{padding:9px 8px;min-height:46px;}
 }
+</style>
+
+<style id="vena-final-interaction-repair">
+#cartDockButton{display:flex!important;position:fixed!important;left:14px!important;right:14px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;max-width:720px!important;margin:0 auto!important;z-index:99990!important;pointer-events:auto!important;touch-action:manipulation!important}
+#cartDockButton[hidden]{display:none!important}
+#variantPickerModal{z-index:100000!important;pointer-events:auto!important}
+#variantPickerModal.show{display:flex!important;pointer-events:auto!important}
+#variantPickerModal .variant-picker-modal{pointer-events:auto!important;touch-action:pan-y!important}
+#products .variant-open-button{display:block!important;position:relative!important;inset:auto!important;width:100%!important;min-height:44px!important;margin:0!important;z-index:10!important;pointer-events:auto!important;touch-action:manipulation!important}
+#products .product.product-horizontal{position:relative!important}
+#products .product.product-horizontal::before,#products .product.product-horizontal::after,#products .photo::before,#products .photo::after{pointer-events:none!important}
+body{padding-bottom:86px!important}
 </style>
