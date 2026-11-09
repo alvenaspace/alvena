@@ -878,7 +878,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
   </main>
  </div>
 </div>
-<div class="overlay" id="cartModal"><div class="modal" style="max-width:480px"><div class="modalhead"><h2>Your cart ♡</h2><button class="close" onclick="closeModal('cartModal')">×</button></div><div id="cartItems"></div><div class="total"><span>Total</span><span id="cartTotal">Rp0</span></div><div class="field"><label>NAMA PEMBELI</label><input id="buyerName" placeholder="Nama kamu"></div><div class="field"><label>CATATAN (opsional)</label><textarea id="buyerNote" placeholder="Pesan tambahan..."></textarea></div><button class="primary" style="width:100%" onclick="checkout()">Pesan via WhatsApp ↗</button></div></div>
+<div class="overlay" id="cartModal"><div class="modal" style="max-width:480px"><div class="modalhead"><h2>Pesanan manismu ♡</h2><button class="close" onclick="closeModal('cartModal')">×</button></div><div id="cartItems"></div><div class="total"><span>Total</span><span id="cartTotal">Rp0</span></div><div class="field"><label>NAMA KAMU ♡</label><input id="buyerName" placeholder="Tulis nama panggilanmu di sini"></div><div class="field"><label>PESAN KECIL (OPSIONAL)</label><textarea id="buyerNote" placeholder="Ada request khusus? Tulis di sini ya ♡"></textarea></div><button class="primary" style="width:100%" onclick="checkout()">Kirim pesanan ke WhatsApp ♡</button></div></div>
 <script>
 const SUPABASE_URL='https://fikkvszfbpmlhdtodpnv.supabase.co', SUPABASE_KEY='sb_publishable_z9N4OmAbCuYNZ0G9fAuNUw_BGPKNvqX';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}});
@@ -909,7 +909,14 @@ function loadSettings(){
  try{globalSale={...globalSale,...JSON.parse(localStorage.getItem(PROMO)||'{}')}}catch{globalSale={enabled:false,percent:0}}
  applySiteSettings();
 }
-function saveSettings(){localStorage.setItem(SITE,JSON.stringify(siteSettings)); if(sb) sb.from('site_texts').upsert(Object.entries(siteSettings).filter(([id])=>!['profileImage','bannerImage','welcomeBowImage','bearMascotImage'].includes(id)).map(([id,content])=>({id,content:String(content??'')}))).then(({error})=>{if(error)alert('Tulisan tersimpan di perangkat, tetapi gagal disinkronkan: '+error.message)})}
+async function saveSettings(){
+ localStorage.setItem(SITE,JSON.stringify(siteSettings));
+ if(!sb)throw new Error('Supabase belum terhubung.');
+ const rows=Object.entries(siteSettings).filter(([id])=>!['profileImage','bannerImage','welcomeBowImage','bearMascotImage'].includes(id)).map(([id,content])=>({id,content:String(content??'')}));
+ const {error}=await sb.from('site_texts').upsert(rows,{onConflict:'id'});
+ if(error)throw new Error('Gagal menyimpan site_texts: '+error.message);
+ return true;
+}
 function saleIsLive(){return !!(globalSale.enabled&&(!globalSale.endAt||new Date(globalSale.endAt).getTime()>Date.now()))}
 function getPrice(p){if(saleIsLive()&&p.sale&&p.sale<p.price&&p.saleEnabled!==false)return Number(p.sale);if(saleIsLive()&&globalSale.percent>0)return Math.max(0,Math.round(Number(p.price)*(100-globalSale.percent)/100));return Number(p.price)}
 function hasSale(p){return getPrice(p)<Number(p.price)}
@@ -947,7 +954,7 @@ function renderSocialProof(){
    : `<div class="intro-social-empty"><span class="intro-social-icon telegram">➤</span><span class="intro-social-copy"><b>Testimoni</b><small>Atur link di Admin ♡</small></span></div>`;
  }
 }
-function saveSocialSettings(){
+async function saveSocialSettings(){
  const label=document.getElementById('siteXLabel')?.value.trim()||'';
  let url=document.getElementById('siteXUrl')?.value.trim()||'';
  const telegramLabel=document.getElementById('siteTelegramLabel')?.value.trim()||'';
@@ -958,7 +965,7 @@ function saveSocialSettings(){
  if(telegramUrl&&!/^https?:\/\/(t\.me|telegram\.me)\//i.test(telegramUrl))return alert('Masukkan link Telegram yang valid, contohnya https://t.me/username ♡');
  siteSettings.xLabel=label;siteSettings.xUrl=url;
  siteSettings.telegramLabel=telegramLabel;siteSettings.telegramUrl=telegramUrl;
- saveSettings();renderSocialProof();alert('Akun X/Twitter dan Telegram berhasil disimpan ♡');
+ try{await saveSettings();renderSocialProof();alert('Akun X/Twitter dan Telegram berhasil disimpan ♡')}catch(e){alert('Gagal menyimpan pengaturan ke cloud: '+e.message)}
 }
 function applySiteSettings(){
  const setText=(id,value)=>{const e=document.getElementById(id);if(e)e.textContent=value};
@@ -994,6 +1001,21 @@ function fillSiteForm(){
  const ids={siteName:'name',siteTagline:'tagline',siteTopText:'topText',siteEyebrow:'eyebrow',siteHeroTitle:'heroTitle',siteHeroDesc:'heroDesc',siteBadge1:'badge1',siteBadge2:'badge2',siteBadge3:'badge3',siteProfileTitle:'profileTitle',siteProfileDesc:'profileDesc',siteCatalogTitle:'catalogTitle',siteCatalogSubtitle:'catalogSubtitle',siteFooter:'footer',siteXLabel:'xLabel',siteXUrl:'xUrl',siteTelegramLabel:'telegramLabel',siteTelegramUrl:'telegramUrl',siteIntroTopline:'introTopline',siteIntroWelcome:'introWelcome',siteIntroCaption:'introCaption',siteIntroDesc:'introDesc',siteIntroChip1:'introChip1',siteIntroChip2:'introChip2',siteIntroChip3:'introChip3',siteIntroEnter:'introEnter',siteIntroFooter:'introFooter',siteSearchPlaceholder:'searchPlaceholder',siteProductsEmpty:'productsEmpty',siteFlashTitle:'flashTitle',siteFlashTimerLabel:'flashTimerLabel'};
  Object.entries(ids).forEach(([id,key])=>{const e=document.getElementById(id);if(e)e.value=siteSettings[key]??''});
 }
+const STORE_ASSET_BUCKET='store-assets';
+async function uploadImageDataUrl(dataUrl,folder){
+ if(!dataUrl||!String(dataUrl).startsWith('data:'))return dataUrl;
+ const match=String(dataUrl).match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+ if(!match)throw new Error('Format gambar tidak valid.');
+ const mime=match[1],binary=atob(match[2]),bytes=new Uint8Array(binary.length);
+ for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+ const ext=({ 'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif' })[mime]||'jpg';
+ const path=`${folder}/${crypto.randomUUID()}.${ext}`;
+ const {data,error}=await sb.storage.from(STORE_ASSET_BUCKET).upload(path,new Blob([bytes],{type:mime}),{contentType:mime,upsert:true,cacheControl:'31536000'});
+ if(error)throw new Error(`Upload ${folder} ke Supabase Storage gagal: ${error.message}`);
+ const {data:publicData}=sb.storage.from(STORE_ASSET_BUCKET).getPublicUrl(data.path||path);
+ if(!publicData?.publicUrl)throw new Error('URL publik gambar tidak berhasil dibuat.');
+ return publicData.publicUrl;
+}
 function readImage(file,callback){if(!file)return callback(null);if(!file.type.startsWith('image/'))return alert('Pilih file gambar ya.');if(file.size>3*1024*1024)return alert('Ukuran foto maksimal 3 MB. Pilih foto yang lebih kecil ya ♡');const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=1000,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);callback(canvas.toDataURL('image/jpeg',.82))};img.onerror=()=>callback(reader.result);img.src=reader.result};reader.readAsDataURL(file)}
 let __siteSaveInProgress=false;
 async function saveSiteSettings(){
@@ -1009,17 +1031,17 @@ async function saveSiteSettings(){
    const input=document.getElementById(inputId),file=input?.files?.[0];
    if(!file)continue;
    const data=await new Promise((resolve,reject)=>readImage(file,resolve));
-   if(data)siteSettings[key]=data;
+   if(data)siteSettings[key]=await uploadImageDataUrl(data,'storefront');
   }
-  saveSettings();applySiteSettings();
+  await saveSettings();applySiteSettings();
   // Clear selected files so a later save cannot process the same upload again.
   ['profileImageFile','bannerImageFile','welcomeBowFile','bearMascotFile'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
   alert('Profil, banner, pita, beruang, dan tulisan toko berhasil diperbarui ♡');
  }catch(err){console.error(err);alert('Foto belum berhasil disimpan. Coba pilih ulang fotonya ya ♡');}
  finally{__siteSaveInProgress=false;if(saveButton){saveButton.disabled=false;saveButton.textContent=saveButton.dataset.oldText||'Simpan perubahan';}}
 }
-function resetSiteSettings(){if(!confirm('Kembalikan semua tulisan ke teks awal?'))return;siteSettings={...defaultSite};saveSettings();fillSiteForm();applySiteSettings()}
-function saveGlobalSale(){
+function resetSiteSettings(){if(!confirm('Kembalikan semua tulisan ke teks awal?'))return;siteSettings={...defaultSite};saveSettings().catch(e=>alert('Gagal menyimpan teks ke cloud: '+e.message));fillSiteForm();applySiteSettings()}
+async function saveGlobalSale(){
  const enabled=document.getElementById('flashEnabled').checked;
  const endValue=document.getElementById('saleEndAt').value;
  if(endValue&&new Date(endValue).getTime()<=Date.now())return alert('Waktu berakhir harus di masa depan ya ♡');
@@ -1035,7 +1057,7 @@ function saveGlobalSale(){
  });
  if(!valid)return;
  globalSale={...globalSale,enabled,percent:0,endAt:endValue?new Date(endValue).toISOString():'',message:document.getElementById('saleMessage').value.trim()};
- localStorage.setItem(PROMO,JSON.stringify(globalSale));persist();sb.from('flash_sale_settings').upsert({id:1,is_active:enabled,ends_at:globalSale.endAt||null,promo_text:globalSale.message}).then(({error})=>{if(error)console.warn('Flash sale sync:',error.message)});renderProducts();renderAdmin();
+ localStorage.setItem(PROMO,JSON.stringify(globalSale));try{await persist();const {error}=await sb.from('flash_sale_settings').upsert({id:1,is_active:enabled,ends_at:globalSale.endAt||null,promo_text:globalSale.message});if(error)throw error;}catch(e){return alert('Flash Sale belum tersimpan ke cloud: '+e.message)}renderProducts();renderAdmin();
  alert(enabled?'Flash Sale berhasil disimpan dan diaktifkan ♡':'Pengaturan Flash Sale berhasil disimpan. Aktifkan centang untuk menayangkan promo.');
 }
 async function disableGlobalSale(){globalSale={...globalSale,enabled:false};localStorage.setItem(PROMO,JSON.stringify(globalSale));const {error}=await sb.from('flash_sale_settings').upsert({id:1,is_active:false,ends_at:globalSale.endAt||null,promo_text:globalSale.message||''});if(error)return alert('Gagal memperbarui Flash Sale di cloud: '+error.message);const e=document.getElementById('flashEnabled');if(e)e.checked=false;renderProducts();renderAdmin();alert('Flash Sale dimatikan di semua perangkat ♡')}
@@ -1043,17 +1065,104 @@ function stockChange(id,delta){const p=products.find(x=>x.id===id);if(!p)return;
 function stockSet(id,value){const p=products.find(x=>x.id===id);if(!p)return;const n=Number(value);if(!Number.isFinite(n)||n<0)return alert('Stok harus 0 atau lebih.');p.stock=Math.floor(n);persist();renderAdmin();renderProducts()}
 function stockClear(id){const p=products.find(x=>x.id===id);if(!p)return;if(!confirm(`Kosongkan stok ${p.name}?`))return;p.stock=0;persist();renderAdmin();renderProducts()}
 
-function mapDbProduct(r){return {id:r.id,name:r.name,description:r.description||'',category:normalizeCategory(r.category||'Hiburan'),price:Number(r.price)||0,sale:r.sale_price==null?null:Number(r.sale_price),saleEnabled:!!r.sale_enabled,stock:Number(r.stock)||0,image:r.image_url||'',active:!!r.is_active}}
-function dbProduct(p){return {id:p.id,name:p.name,description:p.description||'',category:p.category||'Lainnya',price:Number(p.price)||0,sale_price:p.sale==null?null:Number(p.sale),sale_enabled:!!p.saleEnabled,image_url:(p.image||'').startsWith('data:')?'':(p.image||''),stock:Number(p.stock)||0,is_active:!!p.active}}
-function load(){try{products=JSON.parse(localStorage.getItem(KEY))||starter}catch{products=starter}products=products.map(p=>({...p,category:normalizeCategory(p.category),variants:Array.isArray(p.variants)?p.variants:(Number(p.price)>0?[{id:crypto.randomUUID(),name:'Paket utama',price:Number(p.price),stock:Number(p.stock)||0,sale:p.sale==null?null:Number(p.sale),active:p.active!==false}]:[])}));if(!localStorage.getItem(KEY))persist()}
-async function persist(){localStorage.setItem(KEY,JSON.stringify(products));if(!sb)return;const rows=products.map(p=>{if(!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(p.id))p.id=crypto.randomUUID();return dbProduct(p)});localStorage.setItem(KEY,JSON.stringify(products));if(!rows.length)return;const {error}=await sb.from('products').upsert(rows);if(error){console.error('Supabase product sync:',error.message);alert('Sinkronisasi gagal: '+error.message+'\nPastikan kolom sale_price dan sale_enabled sudah ditambahkan di Supabase.')}else{for(const p of products)await syncAppVariants(p)}}
-async function initCloud(){try{const {data,error}=await sb.from('products').select('*').order('created_at',{ascending:true});if(error)throw error;if(data&&data.length){products=data.map(mapDbProduct);const ids=data.map(x=>x.id);if(ids.length){const {data:vars,error:ve}=await sb.from('product_variants').select('*').in('product_id',ids);if(!ve&&vars){for(const p of products)p.variants=vars.filter(v=>v.product_id===p.id).map(v=>({id:v.id,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,sale:v.promo_price==null?null:Number(v.promo_price),active:v.is_active!==false}));for(const p of products)if(!p.variants.length&&Number(p.price)>0)p.variants=[{id:crypto.randomUUID(),name:'Paket utama',price:Number(p.price),stock:Number(p.stock)||0,sale:p.sale==null?null:Number(p.sale),active:p.active!==false}]}}localStorage.setItem(KEY,JSON.stringify(products))}const {data:txt,error:txtError}=await sb.from('site_texts').select('id,content');if(txtError)throw txtError;if(txt?.length){const cloud={};txt.forEach(x=>cloud[x.id]=x.content);siteSettings={...siteSettings,...cloud};if(cloud.whatsappNumber){waNumber=cloud.whatsappNumber;localStorage.setItem('venacantiq_wa',waNumber)}applySiteSettings()}const {data:promo,error:promoError}=await sb.from('flash_sale_settings').select('*').eq('id',1).maybeSingle();if(promoError)throw promoError;if(promo){globalSale={...globalSale,enabled:!!promo.is_active,endAt:promo.ends_at||'',message:promo.promo_text||''};localStorage.setItem(PROMO,JSON.stringify(globalSale))}renderProducts();}catch(e){console.warn('Supabase load:',e.message);}}
+function mapDbProduct(r){return {id:r.id,name:r.name,description:r.description||'',category:normalizeCategory(r.category||'Hiburan'),price:Number(r.price)||0,sale:null,saleEnabled:false,stock:Number(r.stock)||0,image:r.image_url||'',active:r.is_active!==false,variants:[]}}
+function dbProduct(p){
+ // Match the real public.products schema exactly. Package promotions live in product_variants.
+ return {id:p.id,name:p.name,description:p.description||'',category:normalizeCategory(p.category),price:Number(p.price)||0,image_url:p.image||'',stock:Number(p.stock)||0,is_active:p.active!==false,sort_order:Number(p.sort_order)||0};
+}
+function load(){try{products=JSON.parse(localStorage.getItem(KEY))||starter}catch{products=starter}products=products.map(p=>({...p,category:normalizeCategory(p.category),variants:Array.isArray(p.variants)?p.variants:(Number(p.price)>0?[{id:crypto.randomUUID(),name:'Paket utama',price:Number(p.price),stock:Number(p.stock)||0,sale:p.sale==null?null:Number(p.sale),active:p.active!==false}]:[])}));if(!localStorage.getItem(KEY))localStorage.setItem(KEY,JSON.stringify(products))}
+async function persist(){
+ localStorage.setItem(KEY,JSON.stringify(products));
+ if(!sb)throw new Error('Koneksi Supabase belum tersedia.');
+ const rows=products.map(p=>{
+  if(!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(p.id))p.id=crypto.randomUUID();
+  return dbProduct(p);
+ });
+ localStorage.setItem(KEY,JSON.stringify(products));
+ if(rows.length){
+  const {error}=await sb.from('products').upsert(rows,{onConflict:'id'});
+  if(error){console.error('Supabase products upsert:',error);throw new Error('Gagal menyimpan aplikasi ke tabel products: '+error.message);}
+ }
+ for(const p of products)await syncAppVariants(p);
+ return true;
+}
+async function initCloud(){
+ try{
+  const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true});
+  if(error)throw error;
+  // A successful cloud read is authoritative, including an intentionally empty product list.
+  const cloudProducts=(data||[]).map(mapDbProduct);
+  if(cloudProducts.length){
+   const ids=cloudProducts.map(x=>x.id);
+   const {data:vars,error:ve}=await sb.from('product_variants').select('*').in('product_id',ids);
+   if(ve)throw new Error('Gagal memuat paket: '+ve.message);
+   for(const p of cloudProducts){
+    p.variants=(vars||[]).filter(v=>v.product_id===p.id).map(v=>({
+     id:v.id,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,
+     sale:v.promo_price==null?null:Number(v.promo_price),
+     saleEnabled:!!v.promo_active,active:v.is_active!==false
+    }));
+   }
+  }
+  products=cloudProducts;
+  localStorage.setItem(KEY,JSON.stringify(products));
+  const {data:txt,error:txtError}=await sb.from('site_texts').select('id,content');
+  if(txtError)throw txtError;
+  if(txt?.length){
+   const cloud={};txt.forEach(x=>cloud[x.id]=x.content);
+   siteSettings={...siteSettings,...cloud};
+   if(cloud.whatsappNumber){waNumber=cloud.whatsappNumber;localStorage.setItem('venacantiq_wa',waNumber)}
+   applySiteSettings();
+  }
+  const {data:promo,error:promoError}=await sb.from('flash_sale_settings').select('*').eq('id',1).maybeSingle();
+  if(promoError)throw promoError;
+  if(promo){
+   globalSale={...globalSale,enabled:!!promo.is_active,endAt:promo.ends_at||'',message:promo.promo_text||''};
+   localStorage.setItem(PROMO,JSON.stringify(globalSale));
+  }
+  renderProducts();renderAdmin();
+  console.info('Cloud sync loaded:',products.length,'applications');
+ }catch(e){
+  console.error('Supabase load failed:',e);
+  alert('Data cloud belum berhasil dimuat: '+e.message+'\\nData lokal tidak ditimpa. Periksa izin RLS Supabase.');
+ }
+}
 function rupiah(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}function saveCart(){localStorage.setItem(CART,JSON.stringify(cart));document.getElementById('cartCount').textContent=cart.reduce((a,b)=>a+b.qty,0)}
 function renderCats(){let cats=['Semua',...APP_CATEGORIES.filter(c=>products.some(p=>p.active&&normalizeCategory(p.category)===c))];document.getElementById('categories').innerHTML=cats.map(c=>`<button class="cat ${c===activeCategory?'active':''}" onclick="chooseCat(${JSON.stringify(c)})">${esc(c)}</button>`).join('')}
 function chooseCat(c){activeCategory=c;renderCats();renderProducts()}function renderProducts(){updateFlashSaleBanner();renderCats();let q=document.getElementById('search').value.toLowerCase();let list=products.filter(p=>p.active&&(activeCategory==='Semua'||normalizeCategory(p.category)===activeCategory)&&(p.name+' '+p.description+' '+p.category).toLowerCase().includes(q));document.getElementById('products').innerHTML=list.length?list.map(p=>`<article class="product"><div class="photo">${p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:p.logoText?`<div class="placeholder">${esc(p.logoText)}</div>`:'<div class="placeholder">🌿</div>'}${hasSale(p)?`<span class="sale">FLASH SALE${globalSale.enabled?' · '+globalSale.percent+'%':''}</span>`:''}</div><div class="pbody"><span class="tag">${esc(p.category||'Digital')}</span><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||'')}</div>${appVariants(p).length?'':'<div class="prices"><span class="price">'+rupiah(getPrice(p))+'</span>'+(hasSale(p)?'<span class="old">'+rupiah(p.price)+'</span>':'')+'</div>'}${appVariants(p).length?`<div class="package-picks">${appVariants(p).filter(v=>v.active!==false).map(v=>`<div class="package-pick"><span><b>${esc(v.name)}</b><small>${rupiah((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price)} · stok ${Number(v.stock)||0}</small></span><button class="add" onclick="addCart('${p.id}','${v.id}')" ${v.stock<=0?'disabled':''}>Pilih</button></div>`).join('')}</div>`:`<button class="add" onclick="addCart('${p.id}')" ${p.stock<=0?'disabled':''}>${p.stock<=0?'Stok habis':'+ Tambah ke keranjang'}</button>`}</div></article>`).join(''):'<div class="empty">'+esc(siteSettings.productsEmpty||'Belum ada produk yang cocok ♡')+'</div>'}
 function addCart(id,variantId=null){let p=products.find(x=>x.id===id);if(!p)return;let v=variantId?appVariants(p).find(x=>x.id===variantId):null;let stock=v?Number(v.stock)||0:Number(p.stock)||0;if(stock<=0)return alert('Stok paket habis.');let key=v?`${id}::${variantId}`:id,item=cart.find(x=>x.key===key||(!x.key&&x.id===id&&!variantId));if(item)item.qty=Math.min(item.qty+1,stock);else cart.push({id,variantId,key,qty:1});saveCart()}
-function openCart(){renderCart();show('cartModal')}function renderCart(){let el=document.getElementById('cartItems');if(!cart.length){el.innerHTML='<div class="empty">Keranjangmu masih kosong ♡</div>';document.getElementById('cartTotal').textContent='Rp0';return}let total=0;el.innerHTML=cart.map((it,i)=>{let p=products.find(x=>x.id===it.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!p)return '';let price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):getPrice(p);total+=price*it.qty;return `<div class="cartline"><div><b>${esc(p.name)}${v?' · '+esc(v.name):''}</b><div style="color:var(--muted);margin-top:4px">${rupiah(price)} × ${it.qty}</div></div><div class="qty"><button onclick="changeQty(${i},-1)">−</button>${it.qty}<button onclick="changeQty(${i},1)">+</button></div></div>`}).join('');document.getElementById('cartTotal').textContent=rupiah(total)}function changeQty(index,d){let it=cart[index],p=products.find(x=>x.id===it?.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!it)return;let stock=v?Number(v.stock)||0:Number(p?.stock)||0;it.qty+=d;if(it.qty<=0)cart.splice(index,1);else it.qty=Math.min(it.qty,stock);saveCart();renderCart()}
-function checkout(){if(!cart.length)return alert('Keranjang masih kosong.');if(!waNumber)return alert('Nomor WhatsApp toko belum diatur. Masuk admin lalu pilih Atur WhatsApp toko.');let name=document.getElementById('buyerName').value.trim();if(!name)return alert('Isi nama pembeli dulu ya.');let total=0,lines=cart.map(it=>{let p=products.find(x=>x.id===it.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!p)return '';let price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):getPrice(p);total+=price*it.qty;return `• ${p.name}${v?' - '+v.name:''} x${it.qty} — ${rupiah(price*it.qty)}`}).filter(Boolean);let msg=`Halo venacantiq! Saya mau order:%0A${encodeURIComponent(lines.join('\n'))}%0A%0ANama: ${encodeURIComponent(name)}%0ATotal: ${encodeURIComponent(rupiah(total))}%0ACatatan: ${encodeURIComponent(document.getElementById('buyerNote').value||'-')}`;window.open(`https://wa.me/${waNumber}?text=${msg}`,'_blank');}
+function openCart(){renderCart();show('cartModal')}function renderCart(){let el=document.getElementById('cartItems');if(!cart.length){el.innerHTML='<div class="empty">Belum ada goodies di keranjangmu ♡ Yuk pilih yang kamu suka!</div>';document.getElementById('cartTotal').textContent='Rp0';return}let total=0;el.innerHTML=cart.map((it,i)=>{let p=products.find(x=>x.id===it.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!p)return '';let price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):getPrice(p);total+=price*it.qty;return `<div class="cartline"><div><b>${esc(p.name)}${v?' · '+esc(v.name):''}</b><div style="color:var(--muted);margin-top:4px">${rupiah(price)} × ${it.qty}</div></div><div class="qty"><button onclick="changeQty(${i},-1)">−</button>${it.qty}<button onclick="changeQty(${i},1)">+</button></div></div>`}).join('');document.getElementById('cartTotal').textContent=rupiah(total)}function changeQty(index,d){let it=cart[index],p=products.find(x=>x.id===it?.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!it)return;let stock=v?Number(v.stock)||0:Number(p?.stock)||0;it.qty+=d;if(it.qty<=0)cart.splice(index,1);else it.qty=Math.min(it.qty,stock);saveCart();renderCart()}
+function checkout(){
+ if(!cart.length)return alert('Keranjangmu masih kosong, yuk pilih goodies dulu ♡');
+ if(!waNumber)return alert('Nomor WhatsApp toko belum diatur. Masuk admin lalu pilih Atur WhatsApp toko ya ♡');
+ const name=document.getElementById('buyerName').value.trim();
+ if(!name){document.getElementById('buyerName').focus();return alert('Nama kamu diisi dulu ya, biar kami tahu harus menyapa siapa ♡');}
+ let total=0;
+ const lines=cart.map((it,index)=>{
+  const p=products.find(x=>x.id===it.id);
+  const v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;
+  if(!p)return '';
+  const price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):getPrice(p);
+  total+=price*it.qty;
+  const duration=v?(v.name||'Paket pilihan'):'Paket reguler';
+  return `${index+1}. ${p.name} ♡\n   Durasi/Paket: ${duration}\n   Jumlah: ${it.qty}\n   Harga: ${rupiah(price)} x ${it.qty} = ${rupiah(price*it.qty)}`;
+ }).filter(Boolean);
+ const note=document.getElementById('buyerNote').value.trim();
+ const message=[
+  'Hai Vena Cantique! ♡',
+  'Aku mau pesan goodies ini yaa ✨',
+  '',
+  ...lines,
+  '',
+  `♡ Total pesanan: ${rupiah(total)}`,
+  `♡ Nama: ${name}`,
+  `♡ Catatan: ${note||'Tidak ada'}`,
+  '',
+  'Mohon dibantu cek ketersediaannya yaa. Terima kasih! 🎀'
+ ].join('\n');
+ const url=`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+ window.open(url,'_blank');
+}
 function enterStore(){const s=document.getElementById('introScreen');if(!s)return;s.classList.add('intro-leave');sessionStorage.setItem('venacantiq_intro_seen','1');setTimeout(()=>{s.remove();document.body.classList.add('store-ready')},650)}
 function show(id){document.getElementById(id).classList.add('show')}function closeModal(id){document.getElementById(id).classList.remove('show')}
 async function openLogin(){const {data:{session}}=await sb.auth.getSession();if(session){const ok=await activateAdminSession(true);if(ok)return;}show('loginModal')}
@@ -1095,10 +1204,22 @@ function selectVariant(id){
 function clearVariantForm(){const sel=document.getElementById('variantSelect');if(sel)sel.value='';selectVariant('');}
 function addAppCategory(){const v=document.getElementById('newAppCategory').value.trim();if(!v)return alert('Isi nama kelompok kategori dulu ya.');if(!customAppCategories.includes(v))customAppCategories.push(v);localStorage.setItem('venacantiq_custom_categories',JSON.stringify(customAppCategories));document.getElementById('newAppCategory').value='';refreshAppSelect();document.getElementById('appCategory').value=v;alert('Kelompok kategori baru disimpan ♡')}
 function deleteAppCategory(){const v=document.getElementById('customCategoryDelete').value;if(!v||!customAppCategories.includes(v))return alert('Pilih kelompok buatan yang ingin dihapus.');if(!confirm('Hapus kelompok '+v+'? Aplikasi yang sudah memakai kategori ini tidak ikut terhapus.'))return;customAppCategories=customAppCategories.filter(x=>x!==v);localStorage.setItem('venacantiq_custom_categories',JSON.stringify(customAppCategories));refreshAppSelect()}
-let __appSaveInProgress=false;async function saveApp(){if(__appSaveInProgress)return;__appSaveInProgress=true;const name=document.getElementById('appName').value.trim();if(!name){__appSaveInProgress=false;return alert('Nama aplikasi wajib diisi.');}let id=document.getElementById('appEditId').value||crypto.randomUUID(),p=products.find(x=>x.id===id);const file=document.getElementById('appLogoFile').files[0];const commit=async image=>{const data=p?{...p}:{id,name,price:0,stock:0,sale:null,saleEnabled:false,active:true,variants:[]};data.name=name;data.description=document.getElementById('appDesc').value.trim();data.category=normalizeCategory(document.getElementById('appCategory').value);data.logoText=document.getElementById('appLogoText').value.trim();if(image)data.image=image;else if(!p)data.image='';data.variants=appVariants(data);if(p)products=products.map(x=>x.id===id?data:x);else products.unshift(data);await persist();const logoInput=document.getElementById('appLogoFile');if(logoInput)logoInput.value='';document.getElementById('appEditId').value=id;refreshAppSelect();document.getElementById('appSelect').value=id;refreshVariantSelect();renderAdmin();renderProducts();alert('Data aplikasi berhasil disimpan ♡')};try{if(file){const r=new FileReader();r.onload=()=>commit(r.result).finally(()=>{__appSaveInProgress=false});r.onerror=()=>{__appSaveInProgress=false;alert('Foto logo gagal dibaca. Coba pilih ulang ya ♡')};r.readAsDataURL(file)}else{await commit(null);__appSaveInProgress=false}}catch(e){__appSaveInProgress=false;console.error(e);alert('Aplikasi belum berhasil disimpan. Coba lagi ya ♡')}}
-async function syncAppVariants(p){if(!p)return;const parentId=p.id;if(!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(parentId))return;const rows=appVariants(p).map(v=>({id:v.id,product_id:parentId,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,promo_price:v.sale==null?null:Number(v.sale),promo_active:v.sale!=null&&v.sale<Number(v.price),is_active:v.active!==false}));if(rows.length){const {error}=await sb.from('product_variants').upsert(rows);if(error){console.error(error);alert('Paket tersimpan di perangkat, tetapi sinkronisasi paket ke cloud gagal: '+error.message)}}}
-async function addVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value);if(!p)return alert('Langkah 1: pilih atau simpan aplikasi dulu. Langkah 2: isi nama durasi, harga, dan stok untuk membuat paket pertama ♡');const name=document.getElementById('variantName').value.trim(),price=Number(document.getElementById('variantPrice').value),stock=Number(document.getElementById('variantStock').value);if(!name||!Number.isFinite(price)||price<0||!Number.isFinite(stock)||stock<0)return alert('Isi nama paket, harga, dan stok dengan benar.');const v={id:crypto.randomUUID(),name,price,stock:Math.floor(stock),sale:Number(document.getElementById('variantSale').value)||null,active:document.getElementById('variantActive').value==='true'};appVariants(p).push(v);await persist();await syncAppVariants(p);refreshVariantSelect();document.getElementById('variantSelect').value=v.id;selectVariant(v.id);renderAdmin();renderProducts();alert('Paket baru berhasil ditambahkan ♡')}
-async function updateVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value),id=document.getElementById('variantSelect').value;if(!p||!id)return alert('Pilih satu paket yang ingin di-update.');const v=appVariants(p).find(x=>x.id===id);if(!v)return;const name=document.getElementById('variantName').value.trim(),price=Number(document.getElementById('variantPrice').value),stock=Number(document.getElementById('variantStock').value);if(!name||!Number.isFinite(price)||price<0||!Number.isFinite(stock)||stock<0)return alert('Periksa nama, harga, dan stok paket.');Object.assign(v,{name,price,stock:Math.floor(stock),sale:Number(document.getElementById('variantSale').value)||null,active:document.getElementById('variantActive').value==='true'});await persist();await syncAppVariants(p);refreshVariantSelect();document.getElementById('variantSelect').value=id;selectVariant(id);renderAdmin();renderProducts();alert('Paket terpilih berhasil diperbarui ♡')}
+let __appSaveInProgress=false;async function saveApp(){if(__appSaveInProgress)return;__appSaveInProgress=true;const name=document.getElementById('appName').value.trim();if(!name){__appSaveInProgress=false;return alert('Nama aplikasi wajib diisi.');}let id=document.getElementById('appEditId').value||crypto.randomUUID(),p=products.find(x=>x.id===id);const file=document.getElementById('appLogoFile').files[0];const commit=async image=>{const data=p?{...p}:{id,name,price:0,stock:0,sale:null,saleEnabled:false,active:true,variants:[]};data.name=name;data.description=document.getElementById('appDesc').value.trim();data.category=normalizeCategory(document.getElementById('appCategory').value);data.logoText=document.getElementById('appLogoText').value.trim();if(image)data.image=await uploadImageDataUrl(image,'product-logos');else if(!p)data.image='';data.variants=appVariants(data);if(p)products=products.map(x=>x.id===id?data:x);else products.unshift(data);await persist();const logoInput=document.getElementById('appLogoFile');if(logoInput)logoInput.value='';document.getElementById('appEditId').value=id;refreshAppSelect();document.getElementById('appSelect').value=id;refreshVariantSelect();renderAdmin();renderProducts();alert('Data aplikasi berhasil disimpan ♡')};try{if(file){const r=new FileReader();r.onload=()=>commit(r.result).finally(()=>{__appSaveInProgress=false});r.onerror=()=>{__appSaveInProgress=false;alert('Foto logo gagal dibaca. Coba pilih ulang ya ♡')};r.readAsDataURL(file)}else{await commit(null);__appSaveInProgress=false}}catch(e){__appSaveInProgress=false;console.error(e);alert('Aplikasi belum berhasil disimpan. Coba lagi ya ♡')}}
+async function syncAppVariants(p){
+ if(!p)return;
+ const parentId=p.id;
+ if(!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(parentId))throw new Error('ID aplikasi tidak valid untuk sinkronisasi paket.');
+ const rows=appVariants(p).map(v=>{
+  if(!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(v.id))v.id=crypto.randomUUID();
+  return {id:v.id,product_id:parentId,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,promo_price:v.sale==null?null:Number(v.sale),promo_active:!!(v.saleEnabled||(v.sale!=null&&v.sale<Number(v.price))),is_active:v.active!==false};
+ });
+ if(rows.length){
+  const {error}=await sb.from('product_variants').upsert(rows,{onConflict:'id'});
+  if(error){console.error('Supabase product_variants upsert:',error);throw new Error('Gagal menyimpan paket ke product_variants: '+error.message);}
+ }
+}
+async function addVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value);if(!p)return alert('Langkah 1: pilih atau simpan aplikasi dulu. Langkah 2: isi nama durasi, harga, dan stok untuk membuat paket pertama ♡');const name=document.getElementById('variantName').value.trim(),price=Number(document.getElementById('variantPrice').value),stock=Number(document.getElementById('variantStock').value);if(!name||!Number.isFinite(price)||price<0||!Number.isFinite(stock)||stock<0)return alert('Isi nama paket, harga, dan stok dengan benar.');const v={id:crypto.randomUUID(),name,price,stock:Math.floor(stock),sale:Number(document.getElementById('variantSale').value)||null,saleEnabled:!!document.getElementById('variantSale').value,active:document.getElementById('variantActive').value==='true'};appVariants(p).push(v);await persist();await syncAppVariants(p);refreshVariantSelect();document.getElementById('variantSelect').value=v.id;selectVariant(v.id);renderAdmin();renderProducts();alert('Paket baru berhasil ditambahkan ♡')}
+async function updateVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value),id=document.getElementById('variantSelect').value;if(!p||!id)return alert('Pilih satu paket yang ingin di-update.');const v=appVariants(p).find(x=>x.id===id);if(!v)return;const name=document.getElementById('variantName').value.trim(),price=Number(document.getElementById('variantPrice').value),stock=Number(document.getElementById('variantStock').value);if(!name||!Number.isFinite(price)||price<0||!Number.isFinite(stock)||stock<0)return alert('Periksa nama, harga, dan stok paket.');Object.assign(v,{name,price,stock:Math.floor(stock),sale:Number(document.getElementById('variantSale').value)||null,saleEnabled:!!document.getElementById('variantSale').value,active:document.getElementById('variantActive').value==='true'});await persist();await syncAppVariants(p);refreshVariantSelect();document.getElementById('variantSelect').value=id;selectVariant(id);renderAdmin();renderProducts();alert('Paket terpilih berhasil diperbarui ♡')}
 async function deleteVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value),id=document.getElementById('variantSelect').value;if(!p||!id)return alert('Pilih satu paket yang ingin dihapus.');const v=appVariants(p).find(x=>x.id===id);if(!confirm('Hapus paket '+(v?.name||'terpilih')+' saja?'))return;p.variants=appVariants(p).filter(x=>x.id!==id);const {error}=await sb.from('product_variants').delete().eq('id',id);if(error)console.warn('Delete variant cloud:',error.message);await persist();refreshVariantSelect();renderAdmin();renderProducts();alert('Satu paket berhasil dihapus. Aplikasi dan paket lain tetap ada ♡')}
 function renderAdmin(){
  fillSiteForm();
@@ -1137,7 +1258,7 @@ function toggleCustomCategory(){const select=document.getElementById('pCategory'
 function resetForm(){['editId','pName','pDesc','pPrice','pSale','pImageUrl','pCategoryCustom'].forEach(id=>document.getElementById(id).value='');document.getElementById('pCategory').value='Streaming';toggleCustomCategory();document.getElementById('pStock').value=10;document.getElementById('pActive').checked=true;document.getElementById('pImage').value=''}
 function editProduct(id){let p=products.find(x=>x.id===id);if(!p)return;document.getElementById('editId').value=p.id;document.getElementById('pName').value=p.name;const categorySelect=document.getElementById('pCategory'),known=[...categorySelect.options].some(o=>o.value===p.category&&o.value!=='Lainnya');categorySelect.value=known?p.category:'Lainnya';document.getElementById('pCategoryCustom').value=known?'':(p.category||'');toggleCustomCategory();document.getElementById('pDesc').value=p.description;document.getElementById('pPrice').value=p.price;document.getElementById('pSale').value=p.sale||'';document.getElementById('pStock').value=p.stock;document.getElementById('pImageUrl').value=p.image||'';document.getElementById('pActive').checked=p.active;document.getElementById('pImage').value='';document.querySelector('#adminModal .modal').scrollTo({top:0,behavior:'smooth'})}
 function saveProduct(){let name=document.getElementById('pName').value.trim(),price=Number(document.getElementById('pPrice').value);if(!name||!price)return alert('Nama dan harga wajib diisi.');let id=document.getElementById('editId').value||'p'+Date.now();let old=products.find(p=>p.id===id);let file=document.getElementById('pImage').files[0];let image=document.getElementById('pImageUrl').value.trim()||old?.image||'';let data={id,name,category:(document.getElementById('pCategory').value==='Lainnya'?document.getElementById('pCategoryCustom').value.trim():document.getElementById('pCategory').value.trim())||'Lainnya',description:document.getElementById('pDesc').value.trim(),price,sale:Number(document.getElementById('pSale').value)||null,stock:Math.max(0,Number(document.getElementById('pStock').value)||0),image,active:document.getElementById('pActive').checked};if(file){let reader=new FileReader();reader.onload=()=>{data.image=reader.result;finishSave(data)};reader.readAsDataURL(file)}else finishSave(data)}async function finishSave(data){let i=products.findIndex(p=>p.id===data.id);if(i>=0)products[i]=data;else products.unshift(data);await persist();resetForm();renderAdmin();renderProducts();alert('Produk disimpan dan disinkronkan ke Supabase ♡')}
-async function deleteProduct(id){if(!confirm('Hapus produk ini?'))return;products=products.filter(p=>p.id!==id);cart=cart.filter(x=>x.id!==id);const {error:ve}=await sb.from('product_variants').delete().eq('product_id',id);if(ve)return alert('Gagal menghapus paket dari cloud: '+ve.message);const {error}=await sb.from('products').delete().eq('id',id);if(error)return alert('Gagal menghapus dari cloud: '+error.message);persist();saveCart();renderAdmin();renderProducts()}function setWhatsApp(){let v=prompt('Masukkan nomor WhatsApp toko dengan kode negara, tanpa + atau spasi. Contoh 6281234567890:',siteSettings.whatsappNumber||waNumber);if(v!==null){waNumber=v.replace(/\D/g,'');siteSettings.whatsappNumber=waNumber;localStorage.setItem('venacantiq_wa',waNumber);saveSettings();alert('Nomor WhatsApp disimpan ♡')}}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function deleteProduct(id){if(!confirm('Hapus produk ini?'))return;products=products.filter(p=>p.id!==id);cart=cart.filter(x=>x.id!==id);const {error:ve}=await sb.from('product_variants').delete().eq('product_id',id);if(ve)return alert('Gagal menghapus paket dari cloud: '+ve.message);const {error}=await sb.from('products').delete().eq('id',id);if(error)return alert('Gagal menghapus dari cloud: '+error.message);persist();saveCart();renderAdmin();renderProducts()}function setWhatsApp(){let v=prompt('Masukkan nomor WhatsApp toko dengan kode negara, tanpa + atau spasi. Contoh 6281234567890:',siteSettings.whatsappNumber||waNumber);if(v!==null){waNumber=v.replace(/\D/g,'');siteSettings.whatsappNumber=waNumber;localStorage.setItem('venacantiq_wa',waNumber);saveSettings().then(()=>alert('Nomor WhatsApp disimpan ♡')).catch(e=>alert('Gagal menyimpan nomor WhatsApp ke cloud: '+e.message))}}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 // Original soft pastel music-box / lullaby arrangement made with Web Audio.
 // No external track or copyrighted recording is used.
 let cuteAudio=null,cuteMusicTimer=null,cuteMusicStep=0,cuteMusicOn=false;
