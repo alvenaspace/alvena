@@ -1107,4 +1107,35 @@ async function toggleCuteMusic(){
  catch(e){alert('Musik belum bisa diputar. Coba tekan tombol musik sekali lagi ya ♡');}
 }
 load();loadSettings();renderProducts();setInterval(()=>{const wasLive=saleIsLive();updateFlashSaleBanner();if(!wasLive&&saleIsLive())renderProducts();if(globalSale.endAt&&Date.now()>=new Date(globalSale.endAt).getTime()&&globalSale.enabled){globalSale.enabled=false;localStorage.setItem(PROMO,JSON.stringify(globalSale));renderProducts();}},1000);saveCart();initCloud();restoreAdminSession();if(sessionStorage.getItem('venacantiq_intro_seen')==='1'){document.getElementById('introScreen')?.remove();document.body.classList.add('store-ready')}
-</script></body></html>
+</script>
+<style id="circular-photo-fix">
+/* Uploaded welcome/profile/hero photos must be clipped to the circular sticker frame. */
+.intro-avatar, .avatar-sticker, .hero-sticker { overflow: hidden !important; position: relative; }
+.intro-avatar > img {
+  display:block !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important;
+  object-fit:cover !important; object-position:center !important;
+  border-radius:50% !important;
+}
+.avatar-sticker > img {
+  display:block !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important;
+  object-fit:cover !important; object-position:center !important;
+  border-radius:50% !important;
+}
+.hero-sticker > img {
+  position:absolute !important; inset:0 !important; z-index:1 !important;
+  display:block !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important;
+  object-fit:cover !important; object-position:center !important;
+  border-radius:50% !important;
+}
+.hero-sticker > small {
+  position:absolute !important; z-index:2 !important; bottom:7px !important;
+  left:50% !important; transform:translateX(-50%) !important;
+  padding:3px 7px !important; border-radius:20px !important;
+  background:#fffdf0df !important; white-space:nowrap !important;
+}
+</style>
+
+</body></html>
