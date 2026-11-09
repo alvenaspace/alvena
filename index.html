@@ -572,6 +572,34 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
 
 
 .package-picks{display:grid;gap:8px;margin-top:12px}.package-pick{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #f0d5e3;border-radius:13px;background:#fff9fc}.package-pick span{display:grid;gap:3px}.package-pick small{color:#987b8b;font-size:11px}.package-pick .add{width:auto;margin:0;padding:8px 13px;font-size:12px}
+
+.order-section{margin:28px 0 34px;padding:24px 26px 22px;background:rgba(255,255,255,.94);border:1px solid #f0dce8;border-radius:28px;box-shadow:0 12px 30px #c58eae20;scroll-margin-top:18px}
+.order-heading h2{margin:0 0 20px;font:800 19px 'Nunito',sans-serif;color:#65576b}
+.order-items{min-height:72px}
+.order-empty{display:flex;align-items:center;justify-content:center;min-height:70px;padding:18px;text-align:center;border:2px dashed #f1cddd;border-radius:22px;background:#fff9fc;color:#a38d9b;font-size:14px}
+.order-line{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 4px;border-bottom:1px solid #f2e5ec;color:#67566a}
+.order-line-info{min-width:0;flex:1}.order-line-info b{display:block;font-size:14px}.order-line-info small{display:block;margin-top:5px;color:#a18d9c}
+.order-qty{display:flex;align-items:center;gap:10px;white-space:nowrap}.order-qty button{width:30px;height:30px;border-radius:50%;background:#ffe5f1;color:#b64f86;font-weight:900}
+.order-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:22px}
+.order-total small{display:block;color:#8e7b8a;font-size:12px;font-weight:900;letter-spacing:.7px}.order-total strong{display:block;margin-top:5px;color:#302538;font-size:27px;font-weight:1000}
+.order-checkout{min-width:245px;padding:17px 22px;border-radius:22px}
+.order-customer{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.order-customer .field{margin:0}
+#cartDockButton{display:none!important}
+@media(max-width:650px){.order-section{padding:18px 15px;border-radius:22px}.order-heading h2{font-size:16px}.order-bottom{align-items:stretch;flex-direction:column}.order-checkout{width:100%;min-width:0}.order-customer{grid-template-columns:1fr}.order-total strong{font-size:25px}.order-line{align-items:flex-start;flex-wrap:wrap}.order-qty{margin-left:auto}}
+
+#variantPickerModal{z-index:100010!important;pointer-events:auto!important}
+#variantPickerModal .modal{pointer-events:auto!important;position:relative}
+.variant-open-button{position:relative;z-index:2;pointer-events:auto!important;touch-action:manipulation}
+.categories{display:flex;gap:10px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding:5px 2px 12px}
+.categories::-webkit-scrollbar{display:none}
+.categories .cat{flex:0 0 auto}
+
+#variantPickerModal{position:fixed!important;inset:0!important;z-index:2147483000!important;display:none;align-items:flex-start;justify-content:center;overflow-y:auto!important;padding:12px!important;pointer-events:none!important;background:rgba(28,20,27,.72)!important}
+#variantPickerModal.show{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+#variantPickerModal .variant-picker-modal{width:min(680px,100%)!important;max-height:calc(100dvh - 24px)!important;overflow-y:auto!important;pointer-events:auto!important;position:relative!important;margin:auto!important}
+.variant-open-button{cursor:pointer!important;pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:5!important}
+.variant-option .add{cursor:pointer!important;touch-action:manipulation!important}
+.row2 .field:only-child{grid-column:1/-1}
 </style><style>
 /* FINAL FIX: intro button matches the original solid-pink reference */
 #introScreen .intro-card button.intro-enter,
@@ -741,6 +769,9 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
 .cart-dock strong{font-size:14px}
 .cart-dock-arrow{font-size:12px!important;white-space:nowrap}
 @media(max-width:520px){.variant-picker-modal{padding:15px;border-radius:22px}.variant-picker-modal .modalhead h2{font-size:19px}.variant-options{gap:8px}.variant-option{padding:9px}.variant-option .add{font-size:9px;padding:7px 10px}.cart-dock{bottom:12px;padding:11px 13px}body{padding-bottom:78px!important}}
+#cartDockButton{z-index:99999!important;pointer-events:auto!important;touch-action:manipulation;}
+#cartDockButton[hidden]{display:none!important;}
+.overlay{z-index:100000!important;}
 </style>
 </head>
 <body>
@@ -767,12 +798,24 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
 <div class="top" id="siteTopBar">little treats for your digital world ♡ · welcome to venacantiq</div>
 <div class="music-hint" id="musicHint">♫ original little music box tune</div>
 <button class="music-toggle" id="musicToggle" type="button" onclick="toggleCuteMusic()" aria-pressed="false"><span class="music-note">♫</span><span id="musicToggleText">Play cute music</span></button>
-<div class="wrap"><header class="nav"><div class="brand">venacantiq<small>your tiny pastel digital happy place ♡</small></div><div class="navright"><button class="pill" type="button" id="openCartButton" data-cart-trigger aria-label="Buka keranjang belanja">♡ Keranjang <span id="cartCount">0</span></button><button class="pill" onclick="openLogin()">Admin</button></div></header>
+<div class="wrap"><header class="nav"><div class="brand">venacantiq<small>your tiny pastel digital happy place ♡</small></div><div class="navright"><button class="pill" type="button" id="openCartButton" onclick="scrollToCatalog()" aria-label="Lihat katalog produk">♡ Order</button><button class="pill" type="button" onclick="event.stopPropagation();closeModal('variantPickerModal');openLogin()">Admin</button></div></header>
 <section class="hero"><div><div class="eyebrow">✿ a tiny shop full of happy things ✿</div><h1>Welcome to<br>venacantiq!</h1><p>Little digital goodies, lovely prices, and happy shopping moments. Temukan aplikasi premium favoritmu lalu checkout dengan mudah lewat WhatsApp ♡</p><div class="hero-badges"><span>♡ lovely prices</span><span>✦ easy order</span><span>✿ happy treats</span></div></div><div class="hero-art"><div class="hero-sticker">🧸<small>little<br>dreamer</small></div><span class="hero-spark">✦</span></div></section>
 <section class="hello-card"><div class="avatar-sticker">🎀</div><div class="hello-copy"><div class="eyebrow">HELLO, LITTLE DREAMER ♡</div><h2>Little things, lovely finds</h2><p>Tempat kecil untuk menemukan kebutuhan digital favoritmu. Pilih paket, cek harga, dan biarkan kami bantu bikin harimu lebih praktis!</p><div class="hello-links"><span>♡ cute digital finds</span><span>✿ happy shopping</span><span>☁ easy WhatsApp order</span></div></div><div class="hello-doodle">🌷</div></section>
 <section class="flash-sale-notice" id="flashSaleNotice" aria-live="polite" aria-label="Pengumuman Flash Sale"><div class="flash-sale-copy"><div class="flash-sale-gift">🎁</div><div><h2 class="flash-sale-title">⚡ FLASH SALE</h2><p class="flash-sale-subtitle" id="flashSaleNoticeText">Promo spesial sedang berlangsung ♡</p></div></div><div class="flash-sale-timer-wrap"><span class="flash-sale-timer-label">⏱ Berakhir dalam</span><div class="flash-sale-timer"><div class="flash-time-box"><b id="flashDays">00</b><small>Hari</small></div><div class="flash-time-box"><b id="flashHours">00</b><small>Jam</small></div><div class="flash-time-box"><b id="flashMinutes">00</b><small>Menit</small></div><div class="flash-time-box"><b id="flashSeconds">00</b><small>Detik</small></div></div></div></section>
-<div class="catalog-ribbon"><span>✦ FROM OUR LITTLE DESK TO YOURS ✦</span><b>Find your happy goodies ♡</b><small>Pilih yang kamu suka, ada banyak kejutan manis!</small></div>
+<div class="catalog-ribbon" id="catalog"><span>✦ FROM OUR LITTLE DESK TO YOURS ✦</span><b>Find your happy goodies ♡</b><small>Pilih yang kamu suka, ada banyak kejutan manis!</small></div>
 <div class="tools"><input class="search" id="search" placeholder="Cari aplikasi atau produk..." oninput="renderProducts()"></div><div class="categories" id="categories"></div><main class="grid" id="products"></main>
+<section class="order-section" id="orderSection" aria-label="Keranjang belanja">
+ <div class="order-heading"><h2>🛒 KERANJANG BELANJA kamu (<span id="cartCount">0</span> item)</h2></div>
+ <div id="cartItems" class="order-items"><div class="order-empty">Keranjang masih kosong, klik “+ Keranjang” pada paket di atas ♡</div></div>
+ <div class="order-bottom">
+  <div class="order-total"><small>TOTAL ORDER ♡</small><strong id="cartTotal">Rp0</strong></div>
+  <button class="primary order-checkout" type="button" onclick="checkout()">ORDER VIA WHATSAPP ↗</button>
+ </div>
+ <div class="order-customer">
+  <div class="field"><label>NAMA KAMU ♡</label><input id="buyerName" placeholder="Tulis nama panggilanmu di sini"></div>
+  <div class="field"><label>PESAN KECIL (OPSIONAL)</label><textarea id="buyerNote" placeholder="Ada request khusus? Tulis di sini ya ♡"></textarea></div>
+ </div>
+</section>
 <footer class="footer">made with love ♡ venacantiq</footer></div>
 <div class="overlay" id="loginModal"><div class="modal" style="max-width:390px"><div class="modalhead"><h2>Admin login ♡</h2><button class="close" onclick="closeModal('loginModal')">×</button></div><div class="note">Login admin Vena Cantique menggunakan email yang sudah didaftarkan di Supabase ♡</div><div class="field"><label>EMAIL ADMIN</label><input id="loginUser" type="email" autocomplete="username" placeholder="Email admin"></div><div class="field"><label>PASSWORD</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="Password"></div><button class="primary" style="width:100%" onclick="login()">Masuk dashboard</button><button class="text-button" type="button" onclick="sendPasswordReset()">Lupa password? Kirim link reset ke email ♡</button><p class="admin-help" id="resetStatus" aria-live="polite"></p></div></div>
 <div class="overlay" id="resetPasswordModal"><div class="modal" style="max-width:390px"><div class="modalhead"><h2>Buat password baru ♡</h2></div><p class="note">Masukkan password baru untuk akun adminmu.</p><div class="field"><label>PASSWORD BARU</label><input id="newAdminPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Minimal 8 karakter"></div><button class="primary" style="width:100%" onclick="saveNewPassword()">Simpan password baru</button></div></div>
@@ -822,7 +865,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
      <div class="field"><label>PILIH PAKET YANG SUDAH ADA (UNTUK EDIT / HAPUS)</label><select id="variantSelect" onchange="selectVariant(this.value)"><option value="">Belum ada paket — buat paket pertama di bawah ♡</option></select></div>
      <div class="field"><label>BUAT PAKET BARU · NAMA / DURASI</label><input id="variantName" placeholder="Contoh: 1U - 3 Hari / 1U - 7 Hari / 1U - 30 Hari"></div>
      <div class="row2"><div class="field"><label>HARGA PAKET (Rp)</label><input id="variantPrice" type="number" min="0" placeholder="12000"></div><div class="field"><label>JUMLAH STOK</label><input id="variantStock" type="number" min="0" placeholder="10"></div></div>
-     <div class="row2"><div class="field"><label>HARGA FLASH SALE (OPSIONAL)</label><input id="variantSale" type="number" min="0" placeholder="Harga promo paket"></div><div class="field"><label>STATUS</label><select id="variantActive"><option value="true">Aktif</option><option value="false">Nonaktif</option></select></div></div>
+     <div class="row2"><div class="field"><label>HARGA FLASH SALE (OPSIONAL)</label><input id="variantSale" type="number" min="0" placeholder="Harga promo paket"></div></div>
      <div class="admin-actions"><button class="primary" onclick="addVariant()">＋ Simpan Paket Baru ♡</button><button class="secondary" onclick="clearVariantForm()">＋ Isi Durasi Berikutnya</button><button class="secondary" onclick="updateVariant()">Simpan Perubahan Paket ♡</button><button class="danger" onclick="deleteVariant()">Hapus Paket Terpilih</button></div>
      <small class="admin-help">Setiap durasi punya harga dan stok sendiri. Untuk menambah durasi lain, kosongkan kolom lalu isi paket baru dan tekan Simpan Paket Baru. Untuk mengedit, pilih paket di dropdown terlebih dahulu.</small>
     </div>
@@ -908,17 +951,12 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
   </main>
  </div>
 </div>
-<div class="overlay" id="cartModal"><div class="modal" style="max-width:480px"><div class="modalhead"><h2>Pesanan manismu ♡</h2><button class="close" onclick="closeModal('cartModal')">×</button></div><div id="cartItems"></div><div class="total"><span>Total</span><span id="cartTotal">Rp0</span></div><div class="field"><label>NAMA KAMU ♡</label><input id="buyerName" placeholder="Tulis nama panggilanmu di sini"></div><div class="field"><label>PESAN KECIL (OPSIONAL)</label><textarea id="buyerNote" placeholder="Ada request khusus? Tulis di sini ya ♡"></textarea></div><button class="primary" style="width:100%" onclick="checkout()">Kirim pesanan ke WhatsApp ♡</button></div></div>
-
 <div class="overlay" id="variantPickerModal" onclick="if(event.target===this)closeModal('variantPickerModal')">
  <div class="modal variant-picker-modal">
   <div class="modalhead"><h2 id="variantPickerTitle">Pilih Varian ♡</h2><button class="close" type="button" onclick="closeModal('variantPickerModal')" aria-label="Tutup">×</button></div>
   <div id="variantPickerContent"></div>
  </div>
 </div>
-<button id="cartDockButton" class="cart-dock" type="button" hidden>
- <span>♡ Keranjang <small id="cartDockCount">0 item</small></span><strong id="cartDockTotal">Rp0</strong><span class="cart-dock-arrow">Lihat ›</span>
-</button>
 <script>
 const SUPABASE_URL='https://fikkvszfbpmlhdtodpnv.supabase.co', SUPABASE_KEY='sb_publishable_z9N4OmAbCuYNZ0G9fAuNUw_BGPKNvqX';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}});
@@ -1110,7 +1148,7 @@ function dbProduct(p){
  // Match the real public.products schema exactly. Package promotions live in product_variants.
  return {id:p.id,name:p.name,description:p.description||'',category:normalizeCategory(p.category),price:Number(p.price)||0,image_url:p.image||'',stock:Number(p.stock)||0,is_active:p.active!==false};
 }
-function load(){try{products=JSON.parse(localStorage.getItem(KEY))||starter}catch{products=starter}products=products.map(p=>({...p,category:normalizeCategory(p.category),variants:Array.isArray(p.variants)?p.variants:(Number(p.price)>0?[{id:crypto.randomUUID(),name:'Paket utama',price:Number(p.price),stock:Number(p.stock)||0,sale:p.sale==null?null:Number(p.sale),active:p.active!==false}]:[])}));if(!localStorage.getItem(KEY))localStorage.setItem(KEY,JSON.stringify(products))}
+function load(){try{products=JSON.parse(localStorage.getItem(KEY))||starter}catch{products=starter}products=products.map(p=>({...p,category:normalizeCategory(p.category),variants:(Array.isArray(p.variants)?p.variants:(Number(p.price)>0?[{id:crypto.randomUUID(),name:'Paket utama',price:Number(p.price),stock:Number(p.stock)||0,sale:p.sale==null?null:Number(p.sale)}]:[])).map(v=>({...v,active:true}))}));if(!localStorage.getItem(KEY))localStorage.setItem(KEY,JSON.stringify(products))}
 async function persist(){
  localStorage.setItem(KEY,JSON.stringify(products));
  if(!sb)throw new Error('Koneksi Supabase belum tersedia.');
@@ -1140,7 +1178,7 @@ async function initCloud(){
     p.variants=(vars||[]).filter(v=>v.product_id===p.id).map(v=>({
      id:v.id,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,
      sale:v.promo_price==null?null:Number(v.promo_price),
-     saleEnabled:!!v.promo_active,active:v.is_active!==false
+     saleEnabled:!!v.promo_active,active:true
     }));
    }
   }
@@ -1168,20 +1206,28 @@ async function initCloud(){
  }
 }
 function rupiah(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}function saveCart(){
- localStorage.setItem(CART,JSON.stringify(cart));
+ localStorage.setItem(CART,JSON.stringify(cart));if(typeof renderCart==='function'&&document.getElementById('cartItems'))renderCart();
  const qty=cart.reduce((a,b)=>a+b.qty,0),count=document.getElementById('cartCount');
- if(count)count.textContent=qty;
- const dock=document.getElementById('cartDock'),dockCount=document.getElementById('cartDockCount'),dockTotal=document.getElementById('cartDockTotal');
+ if(count)count.textContent=qty;const headingCount=document.getElementById('cartCount');if(headingCount)headingCount.textContent=qty;
+ const dock=document.getElementById('cartDockButton'),dockCount=document.getElementById('cartDockCount'),dockTotal=document.getElementById('cartDockTotal');
  if(dock){dock.hidden=qty===0;if(dockCount)dockCount.textContent=`${qty} item`;if(dockTotal)dockTotal.textContent=rupiah(cart.reduce((sum,it)=>{const p=products.find(x=>x.id===it.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;const price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):p?getPrice(p):0;return sum+price*it.qty},0));}
 }
-function renderCats(){let cats=['Semua',...APP_CATEGORIES.filter(c=>products.some(p=>p.active&&normalizeCategory(p.category)===c))];document.getElementById('categories').innerHTML=cats.map(c=>`<button class="cat ${c===activeCategory?'active':''}" onclick="chooseCat(${JSON.stringify(c)})">${esc(c)}</button>`).join('')}
+function renderCats(){
+ const cats=['Semua',...APP_CATEGORIES];
+ const icons={Semua:'▦',Hiburan:'🎬',Desain:'🎨',Musik:'♫',AI:'🤖',Produktivitas:'💼','Sosial Media':'♡',Gaming:'🎮'};
+ document.getElementById('categories').innerHTML=cats.map(c=>`<button type="button" class="cat ${c===activeCategory?'active':''}" onclick="chooseCat(${JSON.stringify(c)})">${icons[c]||'✦'} ${esc(c)}</button>`).join('');
+}
 function chooseCat(c){activeCategory=c;renderCats();renderProducts()}
 function renderProductCard(p){
  const variants=appVariants(p).filter(v=>v.active!==false);
  const hasVariants=variants.length>0;
  const available=variants.some(v=>Number(v.stock)>0);
  const image=p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:p.logoText?`<div class="placeholder">${esc(p.logoText)}</div>`:'<div class="placeholder">🌿</div>';
- return `<article class="product"><div class="photo">${image}${hasSale(p)?`<span class="sale">FLASH SALE${globalSale.enabled?' · '+globalSale.percent+'%':''}</span>`:''}</div><div class="pbody"><span class="tag">${esc(normalizeCategory(p.category))}</span><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||'')}</div>${hasVariants?`<button class="add variant-open-button" type="button" onclick="openVariantPicker('${p.id}')">${available?'Pilih Varian ›':'Stok Habis'}</button>`:`<div class="prices"><span class="price">${rupiah(getPrice(p))}</span>${hasSale(p)?`<span class="old">${rupiah(p.price)}</span>`:''}</div><button class="add" type="button" onclick="addCart('${p.id}')" ${Number(p.stock)<=0?'disabled':''}>${Number(p.stock)<=0?'Stok habis':'+ Keranjang'}</button>`}</div></article>`;
+ const priceBlock=!hasVariants?`<div class="prices"><span class="price">${rupiah(getPrice(p))}</span>${hasSale(p)?`<span class="old">${rupiah(p.price)}</span>`:''}</div>`:'';
+ const action=hasVariants
+  ?`<button class="add variant-open-button" type="button" data-open-variants="${esc(String(p.id))}" onclick="openVariantPicker(this.getAttribute('data-open-variants'))">${available?'Pilih Varian ›':'Stok Habis'}</button>`
+  :`<button class="add" type="button" data-add-product="${esc(String(p.id))}" onclick="addCart(this.getAttribute('data-add-product'))" ${Number(p.stock)<=0?'disabled':''}>${Number(p.stock)<=0?'Stok habis':'+ Keranjang'}</button>`;
+ return `<article class="product product-horizontal"><div class="product-main"><div class="photo">${image}${hasSale(p)?`<span class="sale">FLASH SALE${globalSale.enabled?' · '+globalSale.percent+'%':''}</span>`:''}</div><div class="pbody"><span class="tag">${esc(normalizeCategory(p.category))}</span><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||'')}</div>${priceBlock}</div></div>${action}</article>`;
 }
 function renderProducts(){updateFlashSaleBanner();renderCats();let q=document.getElementById('search').value.toLowerCase();let list=products.filter(p=>p.active&&(activeCategory==='Semua'||normalizeCategory(p.category)===activeCategory)&&(p.name+' '+p.description+' '+p.category).toLowerCase().includes(q));const root=document.getElementById('products');if(!list.length){root.innerHTML='<div class="empty">'+esc(siteSettings.productsEmpty||'Belum ada produk yang cocok ♡')+'</div>';return;}const cats=activeCategory==='Semua'?APP_CATEGORIES.filter(c=>list.some(p=>normalizeCategory(p.category)===c)):[activeCategory];root.classList.add('grouped-products');root.innerHTML=cats.map(c=>{const items=list.filter(p=>normalizeCategory(p.category)===c);if(!items.length)return '';return `<section class="category-section"><div class="category-heading"><span class="category-heading-icon">${({Hiburan:'🎬',Desain:'🎨',Musik:'🎵',AI:'🤖',Produktivitas:'💼','Sosial Media':'♡',Gaming:'🎮'})[c]||'✦'}</span><div><h2>${esc(c)}</h2><small>${items.length} aplikasi tersedia ♡</small></div></div><div class="category-product-grid">${items.map(renderProductCard).join('')}</div></section>`;}).join('');}
 let variantPickerProductId=null;
@@ -1189,19 +1235,38 @@ function openVariantPicker(id){
  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
  variantPickerProductId=p.id;
  document.getElementById('variantPickerTitle').textContent=`Pilih Varian ${p.name} ♡`;
- const active=appVariants(p).filter(v=>v.active!==false);
+ // Semua paket ditampilkan; ketersediaan pembelian hanya mengikuti jumlah stok.
+ const variants=appVariants(p);
  const image=p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:`<div class="variant-picker-placeholder">♡</div>`;
  document.getElementById('variantPickerContent').innerHTML=
   `<div class="variant-product-head"><div class="variant-product-image">${image}</div><div><b>${esc(p.name)}</b><small>${esc(p.description||'Pilih paket yang kamu mau ♡')}</small></div></div>`+
-  (active.length?`<div class="variant-options">${active.map(v=>{
+  (variants.length?`<div class="variant-options">${variants.map(v=>{
    const price=(saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price;
    const stock=Number(v.stock)||0;
-   return `<article class="variant-option"><div class="variant-option-info"><b>${esc(v.name)}</b><strong>${rupiah(price)}${v.sale!=null&&price<v.price?` <del>${rupiah(v.price)}</del>`:''}</strong><small>${stock>0?`Stok ${stock}`:'Stok habis'}</small></div><button type="button" class="add" onclick="addCart('${p.id}','${v.id}')" ${stock<=0?'disabled':''}>${stock>0?'+ Keranjang':'Habis'}</button></article>`;
-  }).join('')}</div>`:'<div class="empty">Belum ada variasi aktif untuk produk ini ♡</div>');
+   const disabled=stock<=0;
+   const status=stock>0?`Stok ${stock}`:'Stok habis';
+   const buttonText=stock>0?'+ Keranjang':'Stok Habis';
+   return `<article class="variant-option"><div class="variant-option-info"><b>${esc(v.name)}</b><strong>${rupiah(price)}${v.sale!=null&&price<v.price?` <del>${rupiah(v.price)}</del>`:''}</strong><small>${status}</small></div><button type="button" class="add" data-add-variant="${esc(String(p.id))}" data-variant-id="${esc(String(v.id))}" onclick="addCart(this.getAttribute('data-add-variant'),this.getAttribute('data-variant-id'))" ${disabled?'disabled':''}>${buttonText}</button></article>`;
+  }).join('')}</div>`:'<div class="empty">Belum ada paket untuk produk ini ♡</div>');
  show('variantPickerModal');
 }
-function addCart(id,variantId=null){let p=products.find(x=>x.id===id);if(!p)return;let v=variantId?appVariants(p).find(x=>x.id===variantId):null;let stock=v?Number(v.stock)||0:Number(p.stock)||0;if(stock<=0)return alert('Stok paket habis.');let key=v?`${id}::${variantId}`:id,item=cart.find(x=>x.key===key||(!x.key&&x.id===id&&!variantId));if(item)item.qty=Math.min(item.qty+1,stock);else cart.push({id,variantId,key,qty:1});saveCart();if(variantId)closeModal('variantPickerModal');}
-function openCart(){renderCart();show('cartModal')}function renderCart(){let el=document.getElementById('cartItems');if(!cart.length){el.innerHTML='<div class="empty">Belum ada goodies di keranjangmu ♡ Yuk pilih yang kamu suka!</div>';document.getElementById('cartTotal').textContent='Rp0';return}let total=0;el.innerHTML=cart.map((it,i)=>{let p=products.find(x=>x.id===it.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!p)return '';let price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):getPrice(p);total+=price*it.qty;return `<div class="cartline"><div><b>${esc(p.name)}${v?' · '+esc(v.name):''}</b><div style="color:var(--muted);margin-top:4px">${rupiah(price)} × ${it.qty}</div></div><div class="qty"><button onclick="changeQty(${i},-1)">−</button>${it.qty}<button onclick="changeQty(${i},1)">+</button></div></div>`}).join('');document.getElementById('cartTotal').textContent=rupiah(total)}function changeQty(index,d){let it=cart[index],p=products.find(x=>x.id===it?.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!it)return;let stock=v?Number(v.stock)||0:Number(p?.stock)||0;it.qty+=d;if(it.qty<=0)cart.splice(index,1);else it.qty=Math.min(it.qty,stock);saveCart();renderCart()}
+window.openVariantPicker=openVariantPicker;
+window.addCart=addCart;
+function addCart(id,variantId=null){
+ const p=products.find(x=>String(x.id)===String(id));if(!p)return alert('Produk tidak ditemukan. Coba muat ulang katalog ya ♡');
+ const v=variantId?appVariants(p).find(x=>String(x.id)===String(variantId)):null;
+ if(variantId&&!v)return alert('Paket tidak ditemukan. Muat ulang katalog ya ♡');
+ const stock=v?Number(v.stock)||0:Number(p.stock)||0;
+ if(stock<=0)return alert('Stok paket habis.');
+ const productId=String(p.id),variantKey=v?String(v.id):null,key=v?`${productId}::${variantKey}`:productId;
+ const item=cart.find(x=>x.key===key||(!x.key&&String(x.id)===productId&&(!variantKey||String(x.variantId)===variantKey)));
+ if(item)item.qty=Math.min((Number(item.qty)||0)+1,stock);
+ else cart.push({id:p.id,variantId:v?v.id:null,key,qty:1});
+ saveCart();
+ if(v)closeModal('variantPickerModal');
+}
+function scrollToCatalog(){document.getElementById('catalog')?.scrollIntoView({behavior:'smooth',block:'start'})||document.getElementById('products')?.scrollIntoView({behavior:'smooth',block:'start'});}
+function openCart(){renderCart();document.getElementById('orderSection')?.scrollIntoView({behavior:'smooth',block:'start'})}function renderCart(){let el=document.getElementById('cartItems');if(!cart.length){el.innerHTML='<div class="order-empty">Keranjang masih kosong, klik “+ Keranjang” pada paket di atas ♡</div>';document.getElementById('cartTotal').textContent='Rp0';return}let total=0;el.innerHTML=cart.map((it,i)=>{let p=products.find(x=>x.id===it.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!p)return '';let price=v?((saleIsLive()&&v.sale!=null&&v.sale<v.price)?v.sale:v.price):getPrice(p);total+=price*it.qty;return `<div class="cartline"><div><b>${esc(p.name)}${v?' · '+esc(v.name):''}</b><div style="color:var(--muted);margin-top:4px">${rupiah(price)} × ${it.qty}</div></div><div class="qty"><button onclick="changeQty(${i},-1)">−</button>${it.qty}<button onclick="changeQty(${i},1)">+</button></div></div>`}).join('');document.getElementById('cartTotal').textContent=rupiah(total)}function changeQty(index,d){let it=cart[index],p=products.find(x=>x.id===it?.id),v=p&&it.variantId?appVariants(p).find(x=>x.id===it.variantId):null;if(!it)return;let stock=v?Number(v.stock)||0:Number(p?.stock)||0;it.qty+=d;if(it.qty<=0)cart.splice(index,1);else it.qty=Math.min(it.qty,stock);saveCart();renderCart()}
 function checkout(){
  if(!cart.length)return alert('Keranjangmu masih kosong, yuk pilih goodies dulu ♡');
  if(!waNumber)return alert('Nomor WhatsApp toko belum diatur. Masuk admin lalu pilih Atur WhatsApp toko ya ♡');
@@ -1253,7 +1318,7 @@ async function refreshStoreFromCloud(){
    if(variantError)throw variantError;
    fresh.forEach(p=>p.variants=(variants||[]).filter(v=>v.product_id===p.id).map(v=>({
     id:v.id,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,
-    sale:v.promo_price==null?null:Number(v.promo_price),saleEnabled:!!v.promo_active,active:v.is_active!==false
+    sale:v.promo_price==null?null:Number(v.promo_price),saleEnabled:!!v.promo_active,active:true
    })));
   }
   products=fresh;localStorage.setItem(KEY,JSON.stringify(products));renderProducts();
@@ -1275,11 +1340,21 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 setInterval(refreshStoreFromCloud,15000);
 
 function enterStore(){const s=document.getElementById('introScreen');if(!s)return;s.classList.add('intro-leave');sessionStorage.setItem('venacantiq_intro_seen','1');setTimeout(()=>{s.remove();document.body.classList.add('store-ready')},650)}
-function show(id){document.getElementById(id).classList.add('show')}function closeModal(id){document.getElementById(id).classList.remove('show')}
-async function openLogin(){const {data:{session}}=await sb.auth.getSession();if(session){const ok=await activateAdminSession(true);if(ok)return;}show('loginModal')}
-async function activateAdminSession(openDashboard=true){const {data:allowed,error}=await sb.rpc('is_store_admin');if(error||allowed!==true){admin=false;return false;}admin=true;const {data:rows,error:loadError}=await sb.from('products').select('*').order('id',{ascending:true});if(loadError)throw new Error('Produk cloud gagal dimuat: '+loadError.message);const cloud=(rows||[]).map(mapDbProduct);if(cloud.length){const ids=cloud.map(p=>p.id);const {data:vars,error:variantError}=await sb.from('product_variants').select('*').in('product_id',ids);if(variantError)throw new Error('Paket/stok gagal dimuat: '+variantError.message);cloud.forEach(p=>p.variants=(vars||[]).filter(v=>v.product_id===p.id).map(v=>({id:v.id,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,sale:v.promo_price==null?null:Number(v.promo_price),saleEnabled:!!v.promo_active,active:v.is_active!==false})));}products=cloud;localStorage.setItem(KEY,JSON.stringify(products));closeModal('loginModal');renderProducts();renderAdmin();if(openDashboard)show('adminModal');return true;}
+function show(id){
+ const el=document.getElementById(id);
+ if(!el){console.error('Modal tidak ditemukan:',id);return;}
+ if(id==='adminModal'){closeModal('variantPickerModal');closeModal('loginModal');}
+ if(id==='variantPickerModal'){closeModal('adminModal');closeModal('loginModal');}
+ el.hidden=false;el.style.display='flex';el.style.visibility='visible';el.classList.add('show');
+}
+function closeModal(id){
+ const el=document.getElementById(id);if(!el)return;
+ el.classList.remove('show');el.style.display='none';el.style.visibility='hidden';
+}
+async function openLogin(){closeModal('variantPickerModal');closeModal('loginModal');const {data:{session}}=await sb.auth.getSession();if(session){const ok=await activateAdminSession(true);if(ok)return;}show('loginModal')}
+async function activateAdminSession(openDashboard=true){const {data:allowed,error}=await sb.rpc('is_store_admin');if(error||allowed!==true){admin=false;return false;}admin=true;closeModal('variantPickerModal');const {data:rows,error:loadError}=await sb.from('products').select('*').order('id',{ascending:true});if(loadError)throw new Error('Produk cloud gagal dimuat: '+loadError.message);const cloud=(rows||[]).map(mapDbProduct);if(cloud.length){const ids=cloud.map(p=>p.id);const {data:vars,error:variantError}=await sb.from('product_variants').select('*').in('product_id',ids);if(variantError)throw new Error('Paket/stok gagal dimuat: '+variantError.message);cloud.forEach(p=>p.variants=(vars||[]).filter(v=>v.product_id===p.id).map(v=>({id:v.id,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,sale:v.promo_price==null?null:Number(v.promo_price),saleEnabled:!!v.promo_active,active:true})));}products=cloud;localStorage.setItem(KEY,JSON.stringify(products));closeModal('loginModal');renderProducts();renderAdmin();if(openDashboard)show('adminModal');return true;}
 async function login(){const email=document.getElementById('loginUser').value.trim(),password=document.getElementById('loginPass').value;if(!email||!password)return alert('Isi email dan password admin dulu ya ♡');const {error}=await sb.auth.signInWithPassword({email,password});if(error)return alert('Login gagal: '+error.message);const ok=await activateAdminSession();if(!ok){await sb.auth.signOut();return alert('Akun ini belum memiliki akses admin.');}document.getElementById('loginPass').value='';}
-async function restoreAdminSession(){const {data:{session}}=await sb.auth.getSession();if(session){await activateAdminSession(false);closeModal('adminModal');closeModal('loginModal');}}
+async function restoreAdminSession(){closeModal('variantPickerModal');const {data:{session}}=await sb.auth.getSession();if(session){await activateAdminSession(false);closeModal('adminModal');closeModal('loginModal');}}
 async function sendPasswordReset(){const email=document.getElementById('loginUser').value.trim();if(!email)return alert('Isi email akun admin dulu, lalu tekan Lupa password ya ♡');const redirectTo=window.location.origin+window.location.pathname;const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});const status=document.getElementById('resetStatus');if(error){if(status)status.textContent='Gagal mengirim email: '+error.message;return alert('Gagal mengirim email reset: '+error.message);}if(status)status.textContent='Link reset sudah dikirim. Cek Inbox dan folder Spam emailmu ♡';alert('Email reset password dikirim. Cek Inbox/Spam ya ♡');}
 async function saveNewPassword(){const password=document.getElementById('newAdminPassword').value;if(!password||password.length<8)return alert('Password baru minimal 8 karakter ya.');const {error}=await sb.auth.updateUser({password});if(error)return alert('Password belum berhasil diganti: '+error.message);document.getElementById('newAdminPassword').value='';closeModal('resetPasswordModal');alert('Password admin berhasil diperbarui ♡');await activateAdminSession();}
 sb.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY'){show('resetPasswordModal');}else if(event==='SIGNED_OUT'){admin=false;closeModal('adminModal');}});
@@ -1305,12 +1380,11 @@ function newAppForm(){document.getElementById('appEditId').value='';document.get
 function selectApp(id){const p=products.find(x=>x.id===id);if(!p){newAppForm();return}document.getElementById('appEditId').value=p.id;document.getElementById('appName').value=p.name;document.getElementById('appDesc').value=p.description||'';document.getElementById('appCategory').value=normalizeCategory(p.category);document.getElementById('appLogoText').value=p.logoText||'';document.getElementById('appLogoFile').value='';refreshVariantSelect();document.getElementById('variantName').value='';document.getElementById('variantPrice').value='';document.getElementById('variantStock').value='';document.getElementById('variantSale').value='';}
 function selectVariant(id){
  const p=products.find(x=>x.id===document.getElementById('appEditId').value),v=p&&appVariants(p).find(x=>x.id===id);
- if(!id||!v){['variantName','variantPrice','variantStock','variantSale'].forEach(k=>{const e=document.getElementById(k);if(e)e.value=''});document.getElementById('variantActive').value='true';return}
+ if(!id||!v){['variantName','variantPrice','variantStock','variantSale'].forEach(k=>{const e=document.getElementById(k);if(e)e.value=''});return}
  document.getElementById('variantName').value=v.name;
  document.getElementById('variantPrice').value=v.price;
  document.getElementById('variantStock').value=v.stock;
  document.getElementById('variantSale').value=v.sale??'';
- document.getElementById('variantActive').value=String(v.active!==false);
 }
 function clearVariantForm(){const sel=document.getElementById('variantSelect');if(sel)sel.value='';selectVariant('');}
 function addAppCategory(){const v=document.getElementById('newAppCategory').value.trim();if(!v)return alert('Isi nama kelompok kategori dulu ya.');if(!customAppCategories.includes(v))customAppCategories.push(v);localStorage.setItem('venacantiq_custom_categories',JSON.stringify(customAppCategories));document.getElementById('newAppCategory').value='';refreshAppSelect();document.getElementById('appCategory').value=v;alert('Kelompok kategori baru disimpan ♡')}
@@ -1322,15 +1396,15 @@ async function syncAppVariants(p){
  if(!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(parentId))throw new Error('ID aplikasi tidak valid untuk sinkronisasi paket.');
  const rows=appVariants(p).map(v=>{
   if(!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(v.id))v.id=crypto.randomUUID();
-  return {id:v.id,product_id:parentId,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,promo_price:v.sale==null?null:Number(v.sale),promo_active:!!(v.saleEnabled||(v.sale!=null&&v.sale<Number(v.price))),is_active:v.active!==false};
+  return {id:v.id,product_id:parentId,name:v.name,price:Number(v.price)||0,stock:Number(v.stock)||0,promo_price:v.sale==null?null:Number(v.sale),promo_active:!!(v.saleEnabled||(v.sale!=null&&v.sale<Number(v.price))),is_active:true};
  });
  if(rows.length){
   const {error}=await sb.from('product_variants').upsert(rows,{onConflict:'id'});
   if(error){console.error('Supabase product_variants upsert:',error);throw new Error('Gagal menyimpan paket ke product_variants: '+error.message);}
  }
 }
-async function addVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value);if(!p)return alert('Langkah 1: pilih atau simpan aplikasi dulu. Langkah 2: isi nama durasi, harga, dan stok untuk membuat paket pertama ♡');const name=document.getElementById('variantName').value.trim(),price=Number(document.getElementById('variantPrice').value),stock=Number(document.getElementById('variantStock').value);if(!name||!Number.isFinite(price)||price<0||!Number.isFinite(stock)||stock<0)return alert('Isi nama paket, harga, dan stok dengan benar.');const v={id:crypto.randomUUID(),name,price,stock:Math.floor(stock),sale:Number(document.getElementById('variantSale').value)||null,saleEnabled:!!document.getElementById('variantSale').value,active:document.getElementById('variantActive').value==='true'};appVariants(p).push(v);await persist();await syncAppVariants(p);refreshVariantSelect();document.getElementById('variantSelect').value=v.id;selectVariant(v.id);renderAdmin();renderProducts();alert('Paket baru berhasil ditambahkan ♡')}
-async function updateVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value),id=document.getElementById('variantSelect').value;if(!p||!id)return alert('Pilih satu paket yang ingin di-update.');const v=appVariants(p).find(x=>x.id===id);if(!v)return;const name=document.getElementById('variantName').value.trim(),price=Number(document.getElementById('variantPrice').value),stock=Number(document.getElementById('variantStock').value);if(!name||!Number.isFinite(price)||price<0||!Number.isFinite(stock)||stock<0)return alert('Periksa nama, harga, dan stok paket.');Object.assign(v,{name,price,stock:Math.floor(stock),sale:Number(document.getElementById('variantSale').value)||null,saleEnabled:!!document.getElementById('variantSale').value,active:document.getElementById('variantActive').value==='true'});await persist();await syncAppVariants(p);refreshVariantSelect();document.getElementById('variantSelect').value=id;selectVariant(id);renderAdmin();renderProducts();alert('Paket terpilih berhasil diperbarui ♡')}
+async function addVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value);if(!p)return alert('Langkah 1: pilih atau simpan aplikasi dulu. Langkah 2: isi nama durasi, harga, dan stok untuk membuat paket pertama ♡');const name=document.getElementById('variantName').value.trim(),price=Number(document.getElementById('variantPrice').value),stock=Number(document.getElementById('variantStock').value);if(!name||!Number.isFinite(price)||price<0||!Number.isFinite(stock)||stock<0)return alert('Isi nama paket, harga, dan stok dengan benar.');const v={id:crypto.randomUUID(),name,price,stock:Math.floor(stock),sale:Number(document.getElementById('variantSale').value)||null,saleEnabled:!!document.getElementById('variantSale').value};appVariants(p).push(v);await persist();await syncAppVariants(p);refreshVariantSelect();document.getElementById('variantSelect').value=v.id;selectVariant(v.id);renderAdmin();renderProducts();alert('Paket baru berhasil ditambahkan ♡')}
+async function updateVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value),id=document.getElementById('variantSelect').value;if(!p||!id)return alert('Pilih satu paket yang ingin di-update.');const v=appVariants(p).find(x=>x.id===id);if(!v)return;const name=document.getElementById('variantName').value.trim(),price=Number(document.getElementById('variantPrice').value),stock=Number(document.getElementById('variantStock').value);if(!name||!Number.isFinite(price)||price<0||!Number.isFinite(stock)||stock<0)return alert('Periksa nama, harga, dan stok paket.');Object.assign(v,{name,price,stock:Math.floor(stock),sale:Number(document.getElementById('variantSale').value)||null,saleEnabled:!!document.getElementById('variantSale').value});await persist();await syncAppVariants(p);refreshVariantSelect();document.getElementById('variantSelect').value=id;selectVariant(id);renderAdmin();renderProducts();alert('Paket terpilih berhasil diperbarui ♡')}
 async function deleteVariant(){const p=products.find(x=>x.id===document.getElementById('appEditId').value),id=document.getElementById('variantSelect').value;if(!p||!id)return alert('Pilih satu paket yang ingin dihapus.');const v=appVariants(p).find(x=>x.id===id);if(!confirm('Hapus paket '+(v?.name||'terpilih')+' saja?'))return;p.variants=appVariants(p).filter(x=>x.id!==id);const {error}=await sb.from('product_variants').delete().eq('id',id);if(error)console.warn('Delete variant cloud:',error.message);await persist();refreshVariantSelect();renderAdmin();renderProducts();alert('Satu paket berhasil dihapus. Aplikasi dan paket lain tetap ada ♡')}
 function renderAdmin(){
  fillSiteForm();
@@ -1342,7 +1416,7 @@ function renderAdmin(){
  const q=(document.getElementById('adminProductSearch')?.value||'').toLowerCase();
  const filtered=products.filter(p=>(p.name+' '+p.category).toLowerCase().includes(q));
  const grouped=filtered.reduce((acc,p)=>{const cat=(p.category||'Lainnya').trim()||'Lainnya';(acc[cat]||(acc[cat]=[])).push(p);return acc;},{});
- document.getElementById('adminList').innerHTML=Object.entries(grouped).map(([category,items],groupIndex)=>`<details class="product-group" ${groupIndex===0?'open':''}><summary><span class="product-group-name">${esc(category)}</span><span class="product-group-meta">${items.length} aplikasi <b>＋</b></span></summary><div class="product-group-body">${items.map(p=>`<div class="adminitem"><div class="adminitem-top"><span><b>${esc(p.name)}</b><small>${appVariants(p).length} paket · ${appVariants(p).reduce((n,v)=>n+(Number(v.stock)||0),0)} total stok · ${p.active?'Aktif':'Nonaktif'}</small></span><div class="actions"><button class="secondary" onclick="selectApp('${p.id}');document.getElementById('appSelect').value='${p.id}'">Edit</button><button class="danger" onclick="deleteProduct('${p.id}')">Hapus aplikasi</button></div></div>${appVariants(p).map(v=>`<div class="adminitem" style="margin:7px 0 0 10px;padding:8px;background:#fff7fb"><div class="adminitem-top"><span><b>♡ ${esc(v.name)}</b><small>${rupiah(v.price)} · stok ${Number(v.stock)||0} · ${v.active===false?'Nonaktif':'Aktif'}</small></span><button class="secondary" onclick="selectApp('${p.id}');document.getElementById('appSelect').value='${p.id}';document.getElementById('variantSelect').value='${v.id}';selectVariant('${v.id}');showAdminSection('productsPanel',document.querySelector('.admin-nav button:nth-child(2)'))">Edit paket</button></div></div>`).join('')}</div>`).join('')}</div></details>`).join('')||'<div class="product-list-empty">Belum ada aplikasi yang cocok ♡</div>';
+ document.getElementById('adminList').innerHTML=Object.entries(grouped).map(([category,items],groupIndex)=>`<details class="product-group" ${groupIndex===0?'open':''}><summary><span class="product-group-name">${esc(category)}</span><span class="product-group-meta">${items.length} aplikasi <b>＋</b></span></summary><div class="product-group-body">${items.map(p=>`<div class="adminitem"><div class="adminitem-top"><span><b>${esc(p.name)}</b><small>${appVariants(p).length} paket · ${appVariants(p).reduce((n,v)=>n+(Number(v.stock)||0),0)} total stok · ${p.active?'Aktif':'Nonaktif'}</small></span><div class="actions"><button class="secondary" onclick="selectApp('${p.id}');document.getElementById('appSelect').value='${p.id}'">Edit</button><button class="danger" onclick="deleteProduct('${p.id}')">Hapus aplikasi</button></div></div>${appVariants(p).map(v=>`<div class="adminitem" style="margin:7px 0 0 10px;padding:8px;background:#fff7fb"><div class="adminitem-top"><span><b>♡ ${esc(v.name)}</b><small>${rupiah(v.price)} · stok ${Number(v.stock)||0}</small></span><button class="secondary" onclick="selectApp('${p.id}');document.getElementById('appSelect').value='${p.id}';document.getElementById('variantSelect').value='${v.id}';selectVariant('${v.id}');showAdminSection('productsPanel',document.querySelector('.admin-nav button:nth-child(2)'))">Edit paket</button></div></div>`).join('')}</div>`).join('')}</div></details>`).join('')||'<div class="product-list-empty">Belum ada aplikasi yang cocok ♡</div>';
  refreshAppSelect();
  const wa=document.getElementById('waCurrent');if(wa)wa.textContent=waNumber?'Nomor aktif: '+waNumber:'Nomor WhatsApp belum diatur.';
  refreshAdminStats();renderFlashManager();
@@ -1412,8 +1486,7 @@ async function toggleCuteMusic(){
  try{const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx){alert('Browser ini belum mendukung pemutar musik.');return;}if(!cuteAudio){cuteAudio=new AudioCtx();cuteAudio.createGain().connect(cuteAudio.destination);}await cuteAudio.resume();cuteMusicOn=true;cuteMusicStep=0;cuteMusicTick();cuteMusicTimer=setInterval(cuteMusicTick,beatMs);btn.classList.add('playing');btn.setAttribute('aria-pressed','true');label.textContent='Pause music';if(hint)hint.textContent='♪ soft little garden melody';}
  catch(e){alert('Musik belum bisa diputar. Coba tekan tombol musik sekali lagi ya ♡');}
 }
-document.getElementById('openCartButton')?.addEventListener('click',function(ev){ev.preventDefault();openCart();});
-document.getElementById('cartDockButton')?.addEventListener('click',function(ev){ev.preventDefault();openCart();});
+// Product and variant actions use direct button handlers.
 load();loadSettings();renderProducts();setInterval(()=>{const wasLive=saleIsLive();updateFlashSaleBanner();if(!wasLive&&saleIsLive())renderProducts();if(globalSale.endAt&&Date.now()>=new Date(globalSale.endAt).getTime()&&globalSale.enabled){globalSale.enabled=false;localStorage.setItem(PROMO,JSON.stringify(globalSale));renderProducts();}},1000);saveCart();initCloud();restoreAdminSession();if(sessionStorage.getItem('venacantiq_intro_seen')==='1'){document.getElementById('introScreen')?.remove();document.body.classList.add('store-ready')}
 </script>
 <style id="circular-photo-fix">
@@ -1607,6 +1680,128 @@ load();loadSettings();renderProducts();setInterval(()=>{const wasLive=saleIsLive
   .hello-card .avatar-sticker {
     left: 11px !important;
   }
+}
+</style>
+
+
+<style id="mobile-variant-click-fix">
+.product::after,.photo::before,.photo::after{pointer-events:none!important}
+.product{position:relative!important;isolation:isolate}
+.product .pbody{position:relative!important;z-index:2!important;pointer-events:auto!important}
+.product .variant-open-button,.product .pbody .add{
+ position:relative!important;z-index:3!important;pointer-events:auto!important;
+ touch-action:manipulation!important;-webkit-tap-highlight-color:transparent;
+}
+#variantPickerModal{
+ position:fixed!important;inset:0!important;z-index:2147483000!important;
+ display:none;align-items:center;justify-content:center;
+ pointer-events:none!important;isolation:isolate;
+}
+#variantPickerModal.show{
+ display:flex!important;visibility:visible!important;pointer-events:auto!important;
+}
+#variantPickerModal>.variant-picker-modal,#variantPickerModal>.modal{
+ position:relative!important;z-index:1!important;pointer-events:auto!important;
+ touch-action:pan-y!important;max-height:calc(100dvh - 24px)!important;
+ overflow-y:auto!important;-webkit-overflow-scrolling:touch;
+}
+#variantPickerModal button{pointer-events:auto!important;touch-action:manipulation!important}
+</style>
+
+
+<!-- Shop buttons call their handlers directly. -->
+
+
+<style id="reference-style-product-cards">
+/* Product cards: logo left, product details right, full-width variant button below */
+#products .category-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch}
+#products .product.product-horizontal{
+ display:flex!important;flex-direction:column!important;gap:12px!important;
+ min-width:0!important;padding:13px!important;overflow:hidden!important;
+ border:2px solid #ccebf1!important;border-radius:24px!important;
+ background:rgba(255,255,255,.96)!important;
+ box-shadow:0 7px 0 #dceff2,0 12px 24px rgba(82,160,180,.10)!important;
+}
+#products .product.product-horizontal::after{pointer-events:none!important;right:10px;top:8px}
+#products .product-horizontal .product-main{
+ display:grid!important;grid-template-columns:78px minmax(0,1fr)!important;
+ align-items:center!important;gap:12px!important;min-width:0!important;
+}
+#products .product-horizontal .photo{
+ width:78px!important;height:78px!important;min-height:78px!important;
+ border-radius:20px!important;overflow:hidden!important;
+ background:linear-gradient(145deg,#e9faff,#fff0f6)!important;
+ border:1px solid #e4f1f2!important;position:relative!important;
+}
+#products .product-horizontal .photo img{
+ width:100%!important;height:100%!important;object-fit:contain!important;
+ padding:5px!important;border-radius:18px!important;
+}
+#products .product-horizontal .photo .sale{
+ top:3px!important;left:3px!important;padding:3px 5px!important;
+ font-size:7px!important;max-width:70px!important;
+}
+#products .product-horizontal .pbody{
+ display:flex!important;flex-direction:column!important;
+ min-width:0!important;padding:0!important;gap:2px!important;
+}
+#products .product-horizontal .tag{
+ font-size:9px!important;line-height:1.3!important;
+}
+#products .product-horizontal .pbody h3{
+ margin:1px 0!important;font-size:17px!important;line-height:1.2!important;
+ overflow-wrap:anywhere!important;
+}
+#products .product-horizontal .desc{
+ min-height:0!important;font-size:10px!important;line-height:1.35!important;
+ overflow-wrap:anywhere!important;
+}
+#products .product-horizontal .prices{margin:5px 0 0!important}
+#products .product-horizontal .price{font-size:14px!important}
+#products .product-horizontal>.add{
+ display:block!important;width:100%!important;min-height:42px!important;
+ margin:0!important;padding:10px 8px!important;border-radius:30px!important;
+ background:#a8e4f3!important;color:#245b73!important;
+ border:1px solid #d9f5fb!important;
+ box-shadow:0 3px 0 #7dcadd!important;font-size:12px!important;
+ font-weight:900!important;position:relative!important;z-index:5!important;
+ pointer-events:auto!important;touch-action:manipulation!important;
+}
+#products .product-horizontal>.add:hover{
+ background:linear-gradient(100deg,#a8e4f3,#f5acd0)!important;color:#245b73!important;
+}
+@media(max-width:420px){
+ #products .category-product-grid{gap:9px!important}
+ #products .product.product-horizontal{padding:10px!important;gap:10px!important;border-radius:20px!important}
+ #products .product-horizontal .product-main{grid-template-columns:64px minmax(0,1fr)!important;gap:9px!important}
+ #products .product-horizontal .photo{width:64px!important;height:64px!important;min-height:64px!important;border-radius:16px!important}
+ #products .product-horizontal .pbody h3{font-size:14px!important}
+ #products .product-horizontal .desc{font-size:9px!important}
+ #products .product-horizontal>.add{min-height:39px!important;font-size:11px!important}
+}
+</style>
+
+
+<style id="keep-original-pink-theme">
+/* Keep the original Vena Cantique pink palette; only the card layout changes */
+#products .product.product-horizontal{
+ border-color:#f3c6dc!important;
+ background:rgba(255,255,255,.97)!important;
+ box-shadow:0 7px 0 #f7dce9,0 12px 24px rgba(201,105,155,.09)!important;
+}
+#products .product-horizontal .photo{
+ background:linear-gradient(145deg,#fff0f6,#fff8fb)!important;
+ border-color:#f6d8e6!important;
+}
+#products .product-horizontal>.add{
+ background:linear-gradient(100deg,#f6a6cf,#f17db7)!important;
+ color:#fff!important;
+ border:1px solid #f8c5df!important;
+ box-shadow:0 3px 0 #d965a0!important;
+}
+#products .product-horizontal>.add:hover{
+ background:linear-gradient(100deg,#f18abf,#e978b2)!important;
+ color:#fff!important;
 }
 </style>
 
