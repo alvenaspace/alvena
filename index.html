@@ -1156,4 +1156,149 @@ load();loadSettings();renderProducts();setInterval(()=>{const wasLive=saleIsLive
 }
 </style>
 
+
+<style id="final-perfect-circle-fix">
+/* Keep only the photo frames circular; preserve the large hero card shape. */
+.hello-card .avatar-sticker {
+  width:76px !important; height:76px !important; min-width:76px !important;
+  aspect-ratio:1 / 1 !important; border-radius:50% !important;
+  overflow:hidden !important; flex:0 0 76px !important;
+  clip-path:circle(50% at 50% 50%) !important;
+}
+.hello-card .avatar-sticker img {
+  width:100% !important; height:100% !important; display:block !important;
+  object-fit:cover !important; border-radius:50% !important;
+}
+/* App logos in every product card are round, not square/rounded-square. */
+.product .photo,
+.product:nth-child(3n+2) .photo,
+.product:nth-child(3n) .photo {
+  width:62px !important; height:62px !important; aspect-ratio:1 / 1 !important;
+  border-radius:50% !important; overflow:hidden !important;
+  clip-path:circle(50% at 50% 50%) !important;
+}
+.product .photo img {
+  width:100% !important; height:100% !important; display:block !important;
+  object-fit:cover !important; object-position:center !important;
+  padding:0 !important; border-radius:50% !important;
+}
+@media(max-width:620px) {
+ .product .photo,.product:nth-child(3n+2) .photo,.product:nth-child(3n) .photo {
+   width:49px !important;height:49px !important;flex:0 0 49px !important;
+ }
+ .hello-card .avatar-sticker {width:56px !important;height:56px !important;min-width:56px !important;flex-basis:56px !important;}
+}
+@media(max-width:380px) {
+ .product .photo,.product:nth-child(3n+2) .photo,.product:nth-child(3n) .photo {
+   width:43px !important;height:43px !important;flex-basis:43px !important;
+ }
+}
+
+/* Vena Cantique catalog: compact two-column app cards inspired by the supplied reference */
+#products.grid, .grid#products, #products {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:14px !important;
+  align-items:stretch !important;
+}
+#products .product {
+  display:block !important;
+  position:relative !important;
+  min-width:0 !important;
+  min-height:174px !important;
+  padding:14px 14px 76px !important;
+  border:1.5px solid #f0d7e3 !important;
+  border-radius:25px !important;
+  background:#fffdfd !important;
+  box-shadow:0 5px 16px #d58eae18 !important;
+  overflow:hidden !important;
+  transform:none !important;
+}
+#products .product:after {display:none !important;}
+#products .product .photo {
+  position:absolute !important;
+  left:15px !important;
+  top:16px !important;
+  width:76px !important;
+  height:76px !important;
+  min-width:76px !important;
+  aspect-ratio:1/1 !important;
+  border:0 !important;
+  border-radius:23px !important;
+  clip-path:none !important;
+  overflow:hidden !important;
+  background:#f8edf3 !important;
+  box-shadow:0 3px 0 #f2d4e2 !important;
+}
+#products .product .photo img {
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  border-radius:23px !important;
+  clip-path:none !important;
+}
+#products .product .photo .placeholder {
+  width:100% !important;height:100% !important;
+  display:grid !important;place-items:center !important;
+  font-size:32px !important;
+}
+#products .product .pbody {
+  display:block !important;
+  min-height:92px !important;
+  padding:3px 0 0 91px !important;
+}
+#products .product .pbody .tag {
+  display:block !important;
+  font-size:9px !important;
+  line-height:1.3 !important;
+  margin:0 0 3px !important;
+}
+#products .product .pbody h3 {
+  margin:2px 0 3px !important;
+  font-size:17px !important;
+  line-height:1.2 !important;
+  color:#3f5872 !important;
+}
+#products .product .pbody .desc {
+  min-height:0 !important;
+  font-size:10px !important;
+  line-height:1.35 !important;
+  overflow-wrap:anywhere !important;
+}
+#products .product .pbody .prices {margin:7px 0 0 !important;}
+#products .product .pbody .price {font-size:15px !important;}
+#products .product .pbody > .add {
+  position:absolute !important;
+  left:14px !important;right:14px !important;bottom:13px !important;
+  width:calc(100% - 28px) !important;
+  min-height:42px !important;
+  margin:0 !important;
+  border-radius:30px !important;
+  font-size:13px !important;
+}
+#products .product .package-picks {
+  grid-column:1/-1 !important;
+  margin:8px 0 0 -91px !important;
+}
+#products .product .sale {z-index:3 !important;font-size:8px !important;}
+@media(max-width:520px){
+  #products.grid, .grid#products, #products {grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:10px !important;}
+  #products .product {min-height:158px !important;padding:12px 10px 65px !important;border-radius:20px !important;}
+  #products .product .photo {left:11px !important;top:13px !important;width:58px !important;height:58px !important;min-width:58px !important;border-radius:18px !important;}
+  #products .product .photo img {border-radius:18px !important;}
+  #products .product .pbody {padding-left:68px !important;min-height:72px !important;}
+  #products .product .pbody h3 {font-size:14px !important;}
+  #products .product .pbody .desc {font-size:9px !important;}
+  #products .product .pbody .tag {font-size:8px !important;}
+  #products .product .pbody > .add {left:10px !important;right:10px !important;width:calc(100% - 20px) !important;bottom:10px !important;min-height:38px !important;font-size:11px !important;}
+  #products .product .package-picks {margin-left:-68px !important;}
+}
+@media(max-width:350px){
+  #products.grid,.grid#products,#products {grid-template-columns:1fr !important;}
+}
+
+</style>
+
 </body></html>
