@@ -550,6 +550,23 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
     linear-gradient(145deg,#eaf5df 0%,#e4f2e5 55%,#dff0e9 100%)!important;
   background-size:23px 23px,23px 23px,100% 100%!important;
 }
+.text-button{display:block;width:100%;margin-top:12px;padding:10px;border:0;background:transparent;color:#bd4b87;font-weight:800;text-decoration:underline;cursor:pointer}.admin-help{font-size:12px;color:#a77d93;margin-top:8px}
+
+/* Customer-facing Flash Sale announcement and live countdown */
+.flash-sale-notice{display:none;position:relative;overflow:hidden;margin:18px 0 20px;padding:16px 18px;border:1px solid #f2c6dc;border-radius:22px;background:linear-gradient(110deg,#fff0f7 0%,#fff8fb 52%,#fff1f7 100%);box-shadow:0 8px 22px #d98caf20;align-items:center;justify-content:space-between;gap:16px}
+.flash-sale-notice.is-live{display:flex}
+.flash-sale-copy{min-width:0;display:flex;align-items:center;gap:12px}
+.flash-sale-gift{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:16px;background:#fff;box-shadow:0 4px 12px #d98caf20;font-size:27px}
+.flash-sale-title{margin:0;color:#d34d91;font:900 21px 'Baloo 2',cursive;letter-spacing:.4px}
+.flash-sale-subtitle{margin:2px 0 0;color:#8f7182;font-size:11px;font-weight:700;line-height:1.5}
+.flash-sale-timer-wrap{flex:0 0 auto;text-align:center}
+.flash-sale-timer-label{display:block;margin-bottom:6px;color:#9c7890;font-size:10px;font-weight:900}
+.flash-sale-timer{display:flex;gap:6px;align-items:center}
+.flash-time-box{min-width:47px;padding:7px 5px;border:1px solid #f0c9dc;border-radius:12px;background:#fff;text-align:center;box-shadow:0 3px 8px #d98caf12}
+.flash-time-box b{display:block;color:#bd4b87;font-size:19px;line-height:1.1;font-weight:900;font-variant-numeric:tabular-nums}
+.flash-time-box small{display:block;margin-top:3px;color:#a98a9d;font-size:8px;font-weight:900;text-transform:uppercase}
+@media(max-width:620px){.flash-sale-notice{align-items:flex-start;flex-direction:column;padding:14px;gap:12px}.flash-sale-timer-wrap{width:100%;text-align:left}.flash-sale-timer{justify-content:flex-start}.flash-time-box{min-width:52px}.flash-sale-title{font-size:19px}}
+
 </style><style>
 /* FINAL FIX: intro button matches the original solid-pink reference */
 #introScreen .intro-card button.intro-enter,
@@ -571,6 +588,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
   background-image: none !important;
   box-shadow: 3px 4px 0 #38566d !important;
 }
+.text-button{display:block;width:100%;margin-top:12px;padding:10px;border:0;background:transparent;color:#bd4b87;font-weight:800;text-decoration:underline;cursor:pointer}.admin-help{font-size:12px;color:#a77d93;margin-top:8px}
 </style>\n
 <style>
 /* Revert intro screen to the user's original reference: pink outside, warm pastel-yellow card */
@@ -594,6 +612,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
   border: 3px solid #38566d !important;
   box-shadow: 5px 6px 0 #38566d !important;
 }
+.text-button{display:block;width:100%;margin-top:12px;padding:10px;border:0;background:transparent;color:#bd4b87;font-weight:800;text-decoration:underline;cursor:pointer}.admin-help{font-size:12px;color:#a77d93;margin-top:8px}
 </style>
 
 
@@ -621,6 +640,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
   background:#f47fb5 !important;
   background-image:none !important;
 }
+.text-button{display:block;width:100%;margin-top:12px;padding:10px;border:0;background:transparent;color:#bd4b87;font-weight:800;text-decoration:underline;cursor:pointer}.admin-help{font-size:12px;color:#a77d93;margin-top:8px}
 </style>
 
 
@@ -687,6 +707,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
   .hello-card { padding-left: 72px !important; }
   .hello-copy h2 { font-size: 16px !important; }
 }
+.text-button{display:block;width:100%;margin-top:12px;padding:10px;border:0;background:transparent;color:#bd4b87;font-weight:800;text-decoration:underline;cursor:pointer}.admin-help{font-size:12px;color:#a77d93;margin-top:8px}
 </style>
 
 </head>
@@ -717,10 +738,12 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
 <div class="wrap"><header class="nav"><div class="brand">venacantiq<small>your tiny pastel digital happy place ♡</small></div><div class="navright"><button class="pill" onclick="openCart()">♡ Keranjang <span id="cartCount">0</span></button><button class="pill" onclick="openLogin()">Admin</button></div></header>
 <section class="hero"><div><div class="eyebrow">✿ a tiny shop full of happy things ✿</div><h1>Welcome to<br>venacantiq!</h1><p>Little digital goodies, lovely prices, and happy shopping moments. Temukan aplikasi premium favoritmu lalu checkout dengan mudah lewat WhatsApp ♡</p><div class="hero-badges"><span>♡ lovely prices</span><span>✦ easy order</span><span>✿ happy treats</span></div></div><div class="hero-art"><div class="hero-sticker">🧸<small>little<br>dreamer</small></div><span class="hero-spark">✦</span></div></section>
 <section class="hello-card"><div class="avatar-sticker">🎀</div><div class="hello-copy"><div class="eyebrow">HELLO, LITTLE DREAMER ♡</div><h2>Little things, lovely finds</h2><p>Tempat kecil untuk menemukan kebutuhan digital favoritmu. Pilih paket, cek harga, dan biarkan kami bantu bikin harimu lebih praktis!</p><div class="hello-links"><span>♡ cute digital finds</span><span>✿ happy shopping</span><span>☁ easy WhatsApp order</span></div></div><div class="hello-doodle">🌷</div></section>
+<section class="flash-sale-notice" id="flashSaleNotice" aria-live="polite" aria-label="Pengumuman Flash Sale"><div class="flash-sale-copy"><div class="flash-sale-gift">🎁</div><div><h2 class="flash-sale-title">⚡ FLASH SALE</h2><p class="flash-sale-subtitle" id="flashSaleNoticeText">Promo spesial sedang berlangsung ♡</p></div></div><div class="flash-sale-timer-wrap"><span class="flash-sale-timer-label">⏱ Berakhir dalam</span><div class="flash-sale-timer"><div class="flash-time-box"><b id="flashDays">00</b><small>Hari</small></div><div class="flash-time-box"><b id="flashHours">00</b><small>Jam</small></div><div class="flash-time-box"><b id="flashMinutes">00</b><small>Menit</small></div><div class="flash-time-box"><b id="flashSeconds">00</b><small>Detik</small></div></div></div></section>
 <div class="catalog-ribbon"><span>✦ FROM OUR LITTLE DESK TO YOURS ✦</span><b>Find your happy goodies ♡</b><small>Pilih yang kamu suka, ada banyak kejutan manis!</small></div>
 <div class="tools"><input class="search" id="search" placeholder="Cari aplikasi atau produk..." oninput="renderProducts()"></div><div class="categories" id="categories"></div><main class="grid" id="products"></main>
 <footer class="footer">made with love ♡ venacantiq</footer></div>
-<div class="overlay" id="loginModal"><div class="modal" style="max-width:390px"><div class="modalhead"><h2>Admin login ♡</h2><button class="close" onclick="closeModal('loginModal')">×</button></div><div class="note">Login admin Vena Cantique menggunakan email yang sudah didaftarkan di Supabase ♡</div><div class="field"><label>EMAIL ADMIN</label><input id="loginUser" type="email" autocomplete="username" placeholder="Email admin"></div><div class="field"><label>PASSWORD</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="Password"></div><button class="primary" style="width:100%" onclick="login()">Masuk dashboard</button></div></div>
+<div class="overlay" id="loginModal"><div class="modal" style="max-width:390px"><div class="modalhead"><h2>Admin login ♡</h2><button class="close" onclick="closeModal('loginModal')">×</button></div><div class="note">Login admin Vena Cantique menggunakan email yang sudah didaftarkan di Supabase ♡</div><div class="field"><label>EMAIL ADMIN</label><input id="loginUser" type="email" autocomplete="username" placeholder="Email admin"></div><div class="field"><label>PASSWORD</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="Password"></div><button class="primary" style="width:100%" onclick="login()">Masuk dashboard</button><button class="text-button" type="button" onclick="sendPasswordReset()">Lupa password? Kirim link reset ke email ♡</button><p class="admin-help" id="resetStatus" aria-live="polite"></p></div></div>
+<div class="overlay" id="resetPasswordModal"><div class="modal" style="max-width:390px"><div class="modalhead"><h2>Buat password baru ♡</h2></div><p class="note">Masukkan password baru untuk akun adminmu.</p><div class="field"><label>PASSWORD BARU</label><input id="newAdminPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Minimal 8 karakter"></div><button class="primary" style="width:100%" onclick="saveNewPassword()">Simpan password baru</button></div></div>
 <div class="overlay" id="adminModal"><div class="modal admin-modal">
  <div class="modalhead"><div><h2>Vena Cantique Admin ♡</h2><small style="font-weight:800;color:#b58ba1">STORE MANAGEMENT DASHBOARD</small></div><button class="close" onclick="closeModal('adminModal')">×</button></div>
  <div class="admin-dashboard">
@@ -826,7 +849,7 @@ body{background-color:#eaf7f8!important;background-image:radial-gradient(#c9e8eb
 <div class="overlay" id="cartModal"><div class="modal" style="max-width:480px"><div class="modalhead"><h2>Your cart ♡</h2><button class="close" onclick="closeModal('cartModal')">×</button></div><div id="cartItems"></div><div class="total"><span>Total</span><span id="cartTotal">Rp0</span></div><div class="field"><label>NAMA PEMBELI</label><input id="buyerName" placeholder="Nama kamu"></div><div class="field"><label>CATATAN (opsional)</label><textarea id="buyerNote" placeholder="Pesan tambahan..."></textarea></div><button class="primary" style="width:100%" onclick="checkout()">Pesan via WhatsApp ↗</button></div></div>
 <script>
 const SUPABASE_URL='https://fikkvszfbpmlhdtodpnv.supabase.co', SUPABASE_KEY='sb_publishable_z9N4OmAbCuYNZ0G9fAuNUw_BGPKNvqX';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}});
 const KEY='venacantiq_products_v1', CART='venacantiq_cart_v1', SITE='venacantiq_site_v1', PROMO='venacantiq_global_sale_v1';let activeCategory='Semua',products=[],cart=JSON.parse(localStorage.getItem(CART)||'[]'),admin=false,waNumber=localStorage.getItem('venacantiq_wa')||'',siteSettings={},globalSale={enabled:false,percent:0};
 const starter=[{id:'s1',name:'Netflix Premium',category:'Streaming',description:'Akun streaming untuk hiburan favoritmu.',price:20000,sale:19000,stock:10,image:'',active:true},{id:'s2',name:'Spotify Premium',category:'Musik',description:'Nikmati musik tanpa batas.',price:15000,sale:null,stock:8,image:'',active:true},{id:'s3',name:'Canva Pro',category:'Design',description:'Bikin desain cantik dengan mudah.',price:25000,sale: null,stock:12,image:'',active:true},{id:'s4',name:'YouTube Premium',category:'Streaming',description:'Nonton lebih nyaman setiap hari.',price:30000,sale:null,stock:6,image:'',active:true}];
 
@@ -850,6 +873,25 @@ function saveSettings(){localStorage.setItem(SITE,JSON.stringify(siteSettings));
 function saleIsLive(){return !!(globalSale.enabled&&(!globalSale.endAt||new Date(globalSale.endAt).getTime()>Date.now()))}
 function getPrice(p){if(saleIsLive()&&p.sale&&p.sale<p.price&&p.saleEnabled!==false)return Number(p.sale);if(saleIsLive()&&globalSale.percent>0)return Math.max(0,Math.round(Number(p.price)*(100-globalSale.percent)/100));return Number(p.price)}
 function hasSale(p){return getPrice(p)<Number(p.price)}
+function updateFlashSaleBanner(){
+ const banner=document.getElementById('flashSaleNotice');if(!banner)return;
+ const eligible=products.filter(p=>p.active&&hasSale(p));
+ const live=saleIsLive()&&eligible.length>0;
+ banner.classList.toggle('is-live',live);
+ if(!live)return;
+ const message=(globalSale.message||'Promo spesial jangan sampai terlewat ♡').trim();
+ const text=document.getElementById('flashSaleNoticeText');
+ if(text)text.textContent=`${message} · ${eligible.length} paket ikut Flash Sale ♡`;
+ const end=globalSale.endAt?new Date(globalSale.endAt).getTime():0;
+ let left=end?Math.max(0,end-Date.now()):0;
+ const days=Math.floor(left/86400000);left%=86400000;
+ const hours=Math.floor(left/3600000);left%=3600000;
+ const minutes=Math.floor(left/60000);left%=60000;
+ const seconds=Math.floor(left/1000);
+ const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=String(value).padStart(2,'0')};
+ put('flashDays',days);put('flashHours',hours);put('flashMinutes',minutes);put('flashSeconds',seconds);
+ const label=banner.querySelector('.flash-sale-timer-label');if(label)label.textContent=end?'⏱ Berakhir dalam':'⏱ Promo sedang berlangsung';
+}
 function renderSocialProof(){
  const x=document.getElementById('introXLink'),tg=document.getElementById('introTelegramLink');
  if(x){
@@ -937,12 +979,20 @@ async function persist(){localStorage.setItem(KEY,JSON.stringify(products));if(!
 async function initCloud(){try{const {data,error}=await sb.from('products').select('*').order('created_at',{ascending:true});if(error)throw error;if(data&&data.length){products=data.map(mapDbProduct);localStorage.setItem(KEY,JSON.stringify(products))}const {data:txt,error:txtError}=await sb.from('site_texts').select('id,content');if(txtError)throw txtError;if(txt?.length){const cloud={};txt.forEach(x=>cloud[x.id]=x.content);siteSettings={...siteSettings,...cloud};if(cloud.whatsappNumber){waNumber=cloud.whatsappNumber;localStorage.setItem('venacantiq_wa',waNumber)}applySiteSettings()}const {data:promo,error:promoError}=await sb.from('flash_sale_settings').select('*').eq('id',1).maybeSingle();if(promoError)throw promoError;if(promo){globalSale={...globalSale,enabled:!!promo.is_active,endAt:promo.ends_at||'',message:promo.promo_text||''};localStorage.setItem(PROMO,JSON.stringify(globalSale))}renderProducts();}catch(e){console.warn('Supabase load:',e.message);}}
 function rupiah(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}function saveCart(){localStorage.setItem(CART,JSON.stringify(cart));document.getElementById('cartCount').textContent=cart.reduce((a,b)=>a+b.qty,0)}
 function renderCats(){let cats=['Semua',...new Set(products.filter(p=>p.active).map(p=>p.category).filter(Boolean))];document.getElementById('categories').innerHTML=cats.map(c=>`<button class="cat ${c===activeCategory?'active':''}" onclick="chooseCat(${JSON.stringify(c)})">${esc(c)}</button>`).join('')}
-function chooseCat(c){activeCategory=c;renderCats();renderProducts()}function renderProducts(){renderCats();let q=document.getElementById('search').value.toLowerCase();let list=products.filter(p=>p.active&&(activeCategory==='Semua'||p.category===activeCategory)&&(p.name+' '+p.description+' '+p.category).toLowerCase().includes(q));document.getElementById('products').innerHTML=list.length?list.map(p=>`<article class="product"><div class="photo">${p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:'<div class="placeholder">🌿</div>'}${hasSale(p)?`<span class="sale">FLASH SALE${globalSale.enabled?' · '+globalSale.percent+'%':''}</span>`:''}</div><div class="pbody"><span class="tag">${esc(p.category||'Digital')}</span><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||'')}</div><div class="prices"><span class="price">${rupiah(getPrice(p))}</span>${hasSale(p)?`<span class="old">${rupiah(p.price)}</span>`:''}</div><button class="add" onclick="addCart('${p.id}')" ${p.stock<=0?'disabled':''}>${p.stock<=0?'Stok habis':'+ Tambah ke keranjang'}</button></div></article>`).join(''):'<div class="empty">Belum ada produk yang cocok ♡</div>'}
+function chooseCat(c){activeCategory=c;renderCats();renderProducts()}function renderProducts(){updateFlashSaleBanner();renderCats();let q=document.getElementById('search').value.toLowerCase();let list=products.filter(p=>p.active&&(activeCategory==='Semua'||p.category===activeCategory)&&(p.name+' '+p.description+' '+p.category).toLowerCase().includes(q));document.getElementById('products').innerHTML=list.length?list.map(p=>`<article class="product"><div class="photo">${p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:'<div class="placeholder">🌿</div>'}${hasSale(p)?`<span class="sale">FLASH SALE${globalSale.enabled?' · '+globalSale.percent+'%':''}</span>`:''}</div><div class="pbody"><span class="tag">${esc(p.category||'Digital')}</span><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||'')}</div><div class="prices"><span class="price">${rupiah(getPrice(p))}</span>${hasSale(p)?`<span class="old">${rupiah(p.price)}</span>`:''}</div><button class="add" onclick="addCart('${p.id}')" ${p.stock<=0?'disabled':''}>${p.stock<=0?'Stok habis':'+ Tambah ke keranjang'}</button></div></article>`).join(''):'<div class="empty">Belum ada produk yang cocok ♡</div>'}
 function addCart(id){let p=products.find(x=>x.id===id);if(!p||p.stock<=0)return alert('Stok produk habis.');let item=cart.find(x=>x.id===id);if(item)item.qty=Math.min(item.qty+1,p.stock);else cart.push({id,qty:1});saveCart()}
 function openCart(){renderCart();show('cartModal')}function renderCart(){let el=document.getElementById('cartItems');if(!cart.length){el.innerHTML='<div class="empty">Keranjangmu masih kosong ♡</div>';document.getElementById('cartTotal').textContent='Rp0';return}let total=0;el.innerHTML=cart.map(it=>{let p=products.find(x=>x.id===it.id);if(!p)return '';let price=getPrice(p);total+=price*it.qty;return `<div class="cartline"><div><b>${esc(p.name)}</b><div style="color:var(--muted);margin-top:4px">${rupiah(price)} × ${it.qty}</div></div><div class="qty"><button onclick="changeQty('${it.id}',-1)">−</button>${it.qty}<button onclick="changeQty('${it.id}',1)">+</button></div></div>`}).join('');document.getElementById('cartTotal').textContent=rupiah(total)}function changeQty(id,d){let it=cart.find(x=>x.id===id),p=products.find(x=>x.id===id);if(!it)return;it.qty+=d;if(it.qty<=0)cart=cart.filter(x=>x.id!==id);else if(p)it.qty=Math.min(it.qty,p.stock);saveCart();renderCart()}
 function checkout(){if(!cart.length)return alert('Keranjang masih kosong.');if(!waNumber)return alert('Nomor WhatsApp toko belum diatur. Masuk admin lalu pilih Atur WhatsApp toko.');let name=document.getElementById('buyerName').value.trim();if(!name)return alert('Isi nama pembeli dulu ya.');let total=0,lines=cart.map(it=>{let p=products.find(x=>x.id===it.id);if(!p)return '';let price=getPrice(p);total+=price*it.qty;return `• ${p.name} x${it.qty} — ${rupiah(price*it.qty)}`}).filter(Boolean);let msg=`Halo venacantiq! Saya mau order:%0A${encodeURIComponent(lines.join('\n'))}%0A%0ANama: ${encodeURIComponent(name)}%0ATotal: ${encodeURIComponent(rupiah(total))}%0ACatatan: ${encodeURIComponent(document.getElementById('buyerNote').value||'-')}`;window.open(`https://wa.me/${waNumber}?text=${msg}`,'_blank');}
 function enterStore(){const s=document.getElementById('introScreen');if(!s)return;s.classList.add('intro-leave');sessionStorage.setItem('venacantiq_intro_seen','1');setTimeout(()=>{s.remove();document.body.classList.add('store-ready')},650)}
-function show(id){document.getElementById(id).classList.add('show')}function closeModal(id){document.getElementById(id).classList.remove('show')}function openLogin(){show('loginModal')}async function login(){const email=document.getElementById('loginUser').value.trim(),password=document.getElementById('loginPass').value;if(!email||!password)return alert('Isi email dan password admin dulu ya ♡');const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)return alert('Login gagal: '+error.message);const {data:allowed,error:checkError}=await sb.rpc('is_store_admin');if(checkError||allowed!==true){await sb.auth.signOut();return alert('Akun ini belum memiliki akses admin.')}admin=true;const {data:rows}=await sb.from('products').select('*').order('created_at',{ascending:true});if(rows)products=rows.map(mapDbProduct);localStorage.setItem(KEY,JSON.stringify(products));closeModal('loginModal');renderProducts();renderAdmin();show('adminModal')}async function logout(){admin=false;await sb.auth.signOut();closeModal('adminModal')}
+function show(id){document.getElementById(id).classList.add('show')}function closeModal(id){document.getElementById(id).classList.remove('show')}function openLogin(){show('loginModal')}
+async function activateAdminSession(){const {data:allowed,error}=await sb.rpc('is_store_admin');if(error||allowed!==true){admin=false;return false;}admin=true;const {data:rows,error:loadError}=await sb.from('products').select('*').order('created_at',{ascending:true});if(!loadError&&rows){products=rows.map(mapDbProduct);localStorage.setItem(KEY,JSON.stringify(products));}closeModal('loginModal');renderProducts();renderAdmin();show('adminModal');return true;}
+async function login(){const email=document.getElementById('loginUser').value.trim(),password=document.getElementById('loginPass').value;if(!email||!password)return alert('Isi email dan password admin dulu ya ♡');const {error}=await sb.auth.signInWithPassword({email,password});if(error)return alert('Login gagal: '+error.message);const ok=await activateAdminSession();if(!ok){await sb.auth.signOut();return alert('Akun ini belum memiliki akses admin.');}document.getElementById('loginPass').value='';}
+async function restoreAdminSession(){const {data:{session}}=await sb.auth.getSession();if(session)await activateAdminSession();}
+async function sendPasswordReset(){const email=document.getElementById('loginUser').value.trim();if(!email)return alert('Isi email akun admin dulu, lalu tekan Lupa password ya ♡');const redirectTo=window.location.origin+window.location.pathname;const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});const status=document.getElementById('resetStatus');if(error){if(status)status.textContent='Gagal mengirim email: '+error.message;return alert('Gagal mengirim email reset: '+error.message);}if(status)status.textContent='Link reset sudah dikirim. Cek Inbox dan folder Spam emailmu ♡';alert('Email reset password dikirim. Cek Inbox/Spam ya ♡');}
+async function saveNewPassword(){const password=document.getElementById('newAdminPassword').value;if(!password||password.length<8)return alert('Password baru minimal 8 karakter ya.');const {error}=await sb.auth.updateUser({password});if(error)return alert('Password belum berhasil diganti: '+error.message);document.getElementById('newAdminPassword').value='';closeModal('resetPasswordModal');alert('Password admin berhasil diperbarui ♡');await activateAdminSession();}
+sb.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY'){show('resetPasswordModal');}else if(event==='SIGNED_OUT'){admin=false;closeModal('adminModal');}});
+async function logout(){admin=false;await sb.auth.signOut();closeModal('adminModal');}
+
 function renderAdmin(){
  fillSiteForm();
  const enabled=document.getElementById('flashEnabled'),info=document.getElementById('globalSaleInfo');
@@ -1023,5 +1073,5 @@ async function toggleCuteMusic(){
  try{const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx){alert('Browser ini belum mendukung pemutar musik.');return;}if(!cuteAudio){cuteAudio=new AudioCtx();cuteAudio.createGain().connect(cuteAudio.destination);}await cuteAudio.resume();cuteMusicOn=true;cuteMusicStep=0;cuteMusicTick();cuteMusicTimer=setInterval(cuteMusicTick,beatMs);btn.classList.add('playing');btn.setAttribute('aria-pressed','true');label.textContent='Pause music';if(hint)hint.textContent='♪ soft little garden melody';}
  catch(e){alert('Musik belum bisa diputar. Coba tekan tombol musik sekali lagi ya ♡');}
 }
-load();loadSettings();renderProducts();saveCart();initCloud();if(sessionStorage.getItem('venacantiq_intro_seen')==='1'){document.getElementById('introScreen')?.remove();document.body.classList.add('store-ready')}
+load();loadSettings();renderProducts();setInterval(()=>{const wasLive=saleIsLive();updateFlashSaleBanner();if(!wasLive&&saleIsLive())renderProducts();if(globalSale.endAt&&Date.now()>=new Date(globalSale.endAt).getTime()&&globalSale.enabled){globalSale.enabled=false;localStorage.setItem(PROMO,JSON.stringify(globalSale));renderProducts();}},1000);saveCart();initCloud();restoreAdminSession();if(sessionStorage.getItem('venacantiq_intro_seen')==='1'){document.getElementById('introScreen')?.remove();document.body.classList.add('store-ready')}
 </script></body></html>
