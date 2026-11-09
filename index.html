@@ -1357,3 +1357,46 @@ load();loadSettings();renderProducts();setInterval(()=>{const wasLive=saleIsLive
 .hello-card .avatar-sticker img{object-fit:cover!important;border-radius:50%!important}
 .hero-sticker img{object-fit:contain!important;padding:8px!important;border-radius:inherit!important}
 </style>
+
+<style id="vena-hello-card-spacing-fix">
+/* Desktop: keep the profile photo in its own left column with visible breathing room. */
+@media (min-width: 621px) {
+  .hello-card {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    padding-left: 128px !important;
+    gap: 0 !important;
+  }
+  .hello-card > .avatar-sticker {
+    position: absolute !important;
+    left: 22px !important;
+    top: 50% !important;
+    right: auto !important;
+    transform: translateY(-50%) !important;
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+    flex: 0 0 76px !important;
+  }
+  .hello-card > .hello-copy {
+    position: relative !important;
+    display: block !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+/* Mobile: preserve the compact side-by-side layout and its original spacing. */
+@media (max-width: 620px) {
+  .hello-card {
+    padding-left: 78px !important;
+  }
+  .hello-card > .avatar-sticker {
+    left: 11px !important;
+    width: 55px !important;
+    height: 55px !important;
+    min-width: 55px !important;
+  }
+}
+</style>
